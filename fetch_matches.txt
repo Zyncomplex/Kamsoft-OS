@@ -1,0 +1,33 @@
+(o){if(o.ep)return;o.ep=!0;const s=n(o);fetch(o.href,s)}})();function Yl(e)
+?y:"":void 0):y=null,d.d.C(v,y))},Xn.prefetchDNS=function(v){if(typeof v!="
+string"||!v)console.error("ReactDOM.prefetchDNS(): Expected the `href` arg
+rossOrigin")?console.error("ReactDOM.prefetchDNS(): Expected only one argum
+ has no effect. Try calling ReactDOM.prefetchDNS() with just a single strin
+ref`.",s(y)):console.error("ReactDOM.prefetchDNS(): Expected only one argum
+tly disallowed. Try calling ReactDOM.prefetchDNS() with just a single strin
+="string"?y.integrity:void 0,D=typeof y.fetchPriority=="string"?y.fetchPrio
+dence:void 0,{crossOrigin:E,integrity:S,fetchPriority:D}):x==="script"&&d.d
+.X(v,{crossOrigin:E,integrity:S,fetchPriority:D,nonce:typeof y.nonc
+e:typeof y.type=="string"?y.type:void 0,fetchPriority:typeof y.fetchPriorit
+y=="string"?y.fetchPriority:void 0,referrerPolicy
+nentWillReceiveProps(). If you meant to fetch data or run side-effects or m
+  async function fetchData() {
+  fetchData();
+Learn more about data fetching with Hooks: https://react.
+dev/link/hooks-data-fetching`:" You returned: "+c,se(i,
+e:"encType",enterkeyhint:"enterKeyHint",fetchpriority:"fetchPriority",for:"
+* Move data fetching code or side effects to co
+* Move data fetching code or side effects to co
+* Move data fetching code or side effects to co
+* Move data fetching code or side effects to co
+.r(r)},D:function(r){vo.D(r),Fk("dns-prefetch",r,null)},C:function(r,i){vo.
+t a valid \`encType\` for \`<Form>\`/\`<fetcher.Form>\` and will default to
+URL(e,typeof window>"u"?"server://singlefetch/":window.location.origin):e;r
+p(o=>o.rel==="stylesheet"?{...o,rel:"prefetch",as:"style"}:{...o,rel:"prefe
+=>w.createElement("link",{key:f,rel:"prefetch",as:"fetch",href:f,...n})))}f
+=>w.createElement("link",{key:S,rel:"prefetch",as:"fetch",href:S,...n})),x.
+ction({onClick:t,discover:n="render",prefetch:a="none",relative:o,reloadDoc
+r DY=w.forwardRef(({discover:e="render",fetcherKey:t,navigate:n,reloadDocum
+ethod"))||u,V=()=>D(M||R.currentTarget,{fetcherKey:t,method:$,navigate:n,re
+basename:t}=w.useContext(Jr),n=YG(),a=e.fetch,o=e.navigate;return w.useCall
+:v}=lY(s,t);if(u.navigate===!1){let y=u.fetcherKey||jY();await a(y,n,u.acti
