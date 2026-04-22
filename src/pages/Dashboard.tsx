@@ -43,13 +43,13 @@ const revenueData = [
 ];
 
 const brandData = [
-  { name: 'Kamsoft Premium', value: 45000 },
-  { name: 'LogiPrint', value: 32000 },
-  { name: 'SwiftWear', value: 28000 },
+  { name: 'The American Patch', value: 45000 },
+  { name: 'Eagle Patch UK', value: 32000 },
+  { name: 'Patch Makers CA', value: 28000 },
 ];
 
 const activity = [
-  { user: 'Sarah Miller', action: 'Lead Won: Modern Edge Studio ($2,450)', time: '2m ago', type: 'conversion' },
+  { user: 'Hammad', action: 'Lead Won: Modern Edge Studio ($2,450)', time: '2m ago', type: 'conversion' },
   { user: 'Client Approval', action: 'Design Approved: Coastal Brand Mockups', time: '14m ago', type: 'approval' },
   { user: 'System Automated', action: 'New Vendor Note: Fabric supply delay #9021', time: '1h ago', type: 'alert' },
 ];

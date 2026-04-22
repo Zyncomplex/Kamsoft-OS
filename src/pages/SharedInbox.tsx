@@ -25,7 +25,7 @@ const threads = [
 
 const messages = [
   { id: 1, sender: 'Alex Johnson', text: 'Hi, I saw your patches on Instagram. I want something similar for my basketball team.', time: '10:30 AM', isMe: false },
-  { id: 2, sender: 'Sarah S. (SDR)', text: 'Hello Alex! We would love to help. Could you share your artwork ideas?', time: '10:45 AM', isMe: true },
+  { id: 2, sender: 'Hammad (SDR)', text: 'Hello Alex! We would love to help. Could you share your artwork ideas?', time: '10:45 AM', isMe: true },
   { id: 3, sender: 'Alex Johnson', text: 'I need an invoice for 500 patches ASAP. Attached is our logo.', time: '11:05 AM', isMe: false, attachment: 'logo_2024_vector.svg' },
 ];
 
@@ -171,7 +171,7 @@ export default function SharedInbox() {
                <img src={`https://picsum.photos/seed/${threads.find(t => t.id === activeThread)?.name}/100/100`} alt="Profile" />
             </div>
             <h4 className="font-black text-slate-800 text-lg tracking-tight">{threads.find(t => t.id === activeThread)?.name}</h4>
-            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">SDR: Sarah Miller • NYC, USA</p>
+            <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">SDR: Hammad • NYC, USA</p>
          </div>
 
          <div className="p-6 space-y-8 flex-1">

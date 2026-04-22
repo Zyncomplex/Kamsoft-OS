@@ -19,7 +19,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
       {/* Left Panel: Promo */}
       <div className="hidden lg:flex w-1/2 bg-slate-950 text-white p-24 flex-col justify-between relative overflow-hidden">
         <div className="relative z-10">
-          <div className="w-14 h-14 flex items-center justify-center mb-12 bg-indigo-900 rounded-2xl overflow-hidden p-2 shadow-2xl">
+          <div className="w-16 h-16 flex items-center justify-center mb-12 bg-transparent">
             <img 
               src="/logo.png" 
               alt="Logo" 
@@ -32,18 +32,32 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                 if (parent) {
                   const span = document.createElement('span');
                   span.innerText = 'K';
-                  span.className = 'text-white font-black text-2xl';
+                  span.className = 'text-white font-black text-2xl flex items-center justify-center w-full h-full bg-indigo-900 rounded-2xl';
                   parent.appendChild(span);
                 }
               }}
             />
           </div>
-          <h1 className="text-7xl font-black tracking-tight leading-[0.85] max-w-lg mb-8">
-            The Future of <span className="text-indigo-400">Yield Management</span>
-          </h1>
-          <p className="text-xl text-slate-400 max-w-sm font-medium leading-relaxed">
-            The mission control for Kamsoft — a premium Fulfillment Operations platform.
-          </p>
+          <div className="flex-1 mt-12">
+            <div className="inline-flex items-center gap-3 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-[10px] font-black tracking-[0.2em] uppercase mb-8">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+              </span>
+              System Online
+            </div>
+            
+            <h1 className="text-[5.5rem] xl:text-[6.5rem] font-black tracking-tighter leading-[0.85] text-white mb-8">
+              Mission<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 via-cyan-400 to-emerald-400">
+                Control.
+              </span>
+            </h1>
+
+            <p className="text-xl text-slate-400 max-w-md font-medium leading-relaxed border-l-2 border-indigo-500/30 pl-6">
+              The central nervous system for our brands — orchestrating premium global fulfillment and yield operations.
+            </p>
+          </div>
         </div>
 
         {/* Animated Metrics */}
@@ -106,9 +120,9 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
               </label>
               <input 
                 type="email" 
-                placeholder="ikhlaque@kamsoft.com"
+                placeholder="ikhlaque@example.com"
                 className="w-full bg-slate-50 border border-slate-100 rounded-[20px] p-5 text-sm font-black text-slate-700 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-300 outline-none transition-all placeholder:text-slate-300"
-                defaultValue="ikhlaque@kamsoft.com"
+                defaultValue="ikhlaque@example.com"
               />
             </div>
 
@@ -158,7 +172,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
         </motion.div>
 
         <p className="mt-12 text-gray-400 text-xs font-medium uppercase tracking-widest text-center">
-           Kamsoft Operations v24.4.21
+           Operations Portal v24.4.21
         </p>
       </div>
     </div>

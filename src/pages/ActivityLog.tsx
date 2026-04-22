@@ -4,12 +4,12 @@ import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 
 const activities = [
-  { id: 1, user: 'Sarah S.', role: 'SDR', action: 'Sent Invoice #INV821', time: '12 min ago', type: 'invoice', details: '$2,450 to Acme Corp' },
-  { id: 2, user: 'James L.', role: 'Design', action: 'Approved Artwork v4', time: '45 min ago', type: 'design', details: 'Client: British Lion' },
+  { id: 1, user: 'Hammad', role: 'SDR', action: 'Sent Invoice #INV821', time: '12 min ago', type: 'invoice', details: '$2,450 to Acme Corp' },
+  { id: 2, user: 'Faiq', role: 'Design', action: 'Approved Artwork v4', time: '45 min ago', type: 'design', details: 'Client: British Lion' },
   { id: 3, user: 'Ikhlaque A.', role: 'Admin', action: 'Released Batch PJ-991', time: '2 hours ago', type: 'prod', details: 'Released to DHL Logistics' },
   { id: 4, user: 'System Relay', role: 'Automation', action: 'SLA Breach Warning', time: '3 hours ago', type: 'alert', details: 'Lead LD-8824 unassigned' },
-  { id: 5, user: 'Sarah S.', role: 'SDR', action: 'Client Replied', time: 'Yesterday', type: 'comm', details: 'Via Email: "Looks great!"' },
-  { id: 6, user: 'Mike R.', role: 'Account Mgr', action: 'New Order Created', time: 'Yesterday', type: 'invoice', details: 'TAP-1025 ($450)' },
+  { id: 5, user: 'Sufyan', role: 'SDR', action: 'Client Replied', time: 'Yesterday', type: 'comm', details: 'Via Email: "Looks great!"' },
+  { id: 6, user: 'Wahid', role: 'Account Mgr', action: 'New Order Created', time: 'Yesterday', type: 'invoice', details: 'TAP-1025 ($450)' },
 ];
 
 const typeStyles: Record<string, any> = {

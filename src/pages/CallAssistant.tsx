@@ -63,7 +63,7 @@ export default function CallAssistant() {
           <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
             <span>+1 (555) 123-4567</span>
             <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-            <span>TAP</span>
+            <span>The American Patch</span>
           </div>
         </div>
         
@@ -155,7 +155,7 @@ export default function CallAssistant() {
                   <input type="checkbox" className="mt-1 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer" />
                   <div>
                     <h4 className="text-sm font-bold text-slate-800">1. Open the call</h4>
-                    <p className="text-[13px] text-slate-600 mt-1">"Hi [Client], this is [Name] from TAP. I'm calling about your patch invoice request — do you have about 30 seconds?"</p>
+                    <p className="text-[13px] text-slate-600 mt-1">"Hi [Client], this is [Name] from The American Patch. I'm calling about your patch invoice request — do you have about 30 seconds?"</p>
                   </div>
                 </div>
               </div>

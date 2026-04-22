@@ -118,7 +118,7 @@ export default function DesignBoard() {
                 </div>
                 <div className="flex items-start gap-4 group/msg">
                    <div className="w-10 h-10 rounded-2xl bg-slate-100 border-2 border-white shadow-sm overflow-hidden shrink-0 group-hover/msg:scale-110 transition-transform">
-                      <img src="https://picsum.photos/seed/sarah/100/100" alt="Sarah" referrerPolicy="no-referrer" />
+                      <img src="https://picsum.photos/seed/hammad/100/100" alt="Hammad" referrerPolicy="no-referrer" />
                    </div>
                    <div>
                       <div className="flex items-center gap-2 mb-1.5">

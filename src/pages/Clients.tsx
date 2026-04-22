@@ -14,11 +14,11 @@ import { cn } from '../lib/utils';
 import { motion } from 'motion/react';
 
 const clientsData = [
-  { id: 'C-8821', name: 'John Smith', company: 'Acme Corp', email: 'john@acmecorp.com', phone: '+1 (555) 123-4567', brand: 'TAP', totalOrders: 4, spent: '$3,250', lastOrder: '2w ago', status: 'Active' },
-  { id: 'C-8822', name: 'Sarah Lee', company: 'Global Tech', email: 'sarah@globaltech.com', phone: '+1 (555) 987-6543', brand: 'Patchmakers', totalOrders: 1, spent: '$450', lastOrder: '1mo ago', status: 'Active' },
-  { id: 'C-8823', name: 'Mike Chen', company: 'Wayne Ent.', email: 'm.chen@wayne.com', phone: '+1 (555) 222-3333', brand: 'Eagle UK', totalOrders: 12, spent: '$14,200', lastOrder: '3d ago', status: 'VIP' },
-  { id: 'C-8824', name: 'Emma Davis', company: 'Stark Ind.', email: 'emma@stark.com', phone: '+1 (555) 444-5555', brand: 'TAP', totalOrders: 0, spent: '$0', lastOrder: 'Never', status: 'Lead' },
-  { id: 'C-8825', name: 'James Wilson', company: 'Pied Piper', email: 'j.wilson@piper.com', phone: '+1 (555) 777-8888', brand: 'Embroidered', totalOrders: 2, spent: '$1,100', lastOrder: '6mo ago', status: 'Dormant' },
+  { id: 'C-8821', name: 'John Smith', company: 'Acme Corp', email: 'john@acmecorp.com', phone: '+1 (555) 123-4567', brand: 'The American Patch', totalOrders: 4, spent: '$3,250', lastOrder: '2w ago', status: 'Active' },
+  { id: 'C-8822', name: 'Sarah Lee', company: 'Global Tech', email: 'sarah@globaltech.com', phone: '+1 (555) 987-6543', brand: 'Patch Makers CA', totalOrders: 1, spent: '$450', lastOrder: '1mo ago', status: 'Active' },
+  { id: 'C-8823', name: 'Mike Chen', company: 'Wayne Ent.', email: 'm.chen@wayne.com', phone: '+1 (555) 222-3333', brand: 'Eagle Patch UK', totalOrders: 12, spent: '$14,200', lastOrder: '3d ago', status: 'VIP' },
+  { id: 'C-8824', name: 'Emma Davis', company: 'Stark Ind.', email: 'emma@stark.com', phone: '+1 (555) 444-5555', brand: 'The American Patch', totalOrders: 0, spent: '$0', lastOrder: 'Never', status: 'Lead' },
+  { id: 'C-8825', name: 'James Wilson', company: 'Pied Piper', email: 'j.wilson@piper.com', phone: '+1 (555) 777-8888', brand: 'Embroidered Patch', totalOrders: 2, spent: '$1,100', lastOrder: '6mo ago', status: 'Dormant' },
 ];
 
 export default function Clients() {

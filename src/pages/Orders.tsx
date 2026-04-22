@@ -21,10 +21,10 @@ import { motion, AnimatePresence } from 'motion/react';
 const orderTabs = ['All', 'Awaiting Payment', 'Design', 'Production', 'QA', 'Shipping', 'Delivered'];
 
 const orders = [
-  { id: 'TAP-1025', customer: 'Phoenix Suns', brand: 'TAP', status: 'Production', value: '$2,450', date: '2h ago', priority: 'high' },
-  { id: 'PM-882', customer: 'Acme Corp', brand: 'Patchmakers', status: 'Design', value: '$890', date: '5h ago', priority: 'normal' },
-  { id: 'EUK-991', customer: 'British Lion', brand: 'Eagle UK', status: 'QA', value: '$12,200', date: '1d ago', priority: 'urgent' },
-  { id: 'TAP-1024', customer: 'Red Cross', brand: 'TAP', status: 'Delivered', value: '$450', date: '2d ago', priority: 'normal' },
+  { id: 'TAP-1025', customer: 'Phoenix Suns', brand: 'The American Patch', status: 'Production', value: '$2,450', date: '2h ago', priority: 'high' },
+  { id: 'PM-882', customer: 'Acme Corp', brand: 'Patch Makers CA', status: 'Design', value: '$890', date: '5h ago', priority: 'normal' },
+  { id: 'EUK-991', customer: 'British Lion', brand: 'Eagle Patch UK', status: 'QA', value: '$12,200', date: '1d ago', priority: 'urgent' },
+  { id: 'TAP-1024', customer: 'Red Cross', brand: 'The American Patch', status: 'Delivered', value: '$450', date: '2d ago', priority: 'normal' },
 ];
 
 export default function Orders() {

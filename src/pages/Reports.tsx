@@ -39,10 +39,10 @@ const sourceData = [
 ];
 
 const sdrPerformance = [
-  { name: 'Sarah S.', closed: 85, revenue: 120000 },
-  { name: 'James L.', closed: 62, revenue: 95000 },
-  { name: 'Mike R.', closed: 45, revenue: 72000 },
-  { name: 'Harvey S.', closed: 38, revenue: 68000 },
+  { name: 'Hammad', closed: 85, revenue: 120000 },
+  { name: 'Faiq', closed: 62, revenue: 95000 },
+  { name: 'Sufyan', closed: 45, revenue: 72000 },
+  { name: 'Wahid', closed: 38, revenue: 68000 },
 ];
 
 export default function Reports() {

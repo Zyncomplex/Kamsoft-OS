@@ -19,12 +19,12 @@ import Vendors from './pages/Vendors';
 import Clients from './pages/Clients';
 import Settings from './pages/Settings';
 import CallAssistant from './pages/CallAssistant';
-import Inventory from './pages/Inventory';
-import Pricing from './pages/Pricing';
 import ActivityLog from './pages/ActivityLog';
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(() => {
+    return localStorage.getItem('app_authenticated') === 'true';
+  });
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = React.useState(false);
 
   React.useEffect(() => {
@@ -41,88 +41,91 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  if (!isAuthenticated) {
-    return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
-  }
+  const handleLogin = () => {
+    localStorage.setItem('app_authenticated', 'true');
+    setIsAuthenticated(true);
+  };
 
   return (
     <Router>
-      <AppShell>
-         {/* Command Palette Modal */}
-         <AnimatePresence>
-            {isCommandPaletteOpen && (
-               <>
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setIsCommandPaletteOpen(false)}
-                    className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100]"
-                  />
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                    className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-xl bg-white rounded-3xl shadow-2xl z-[110] overflow-hidden border border-[#E5E7EB]"
-                  >
-                     <div className="p-6 border-b border-[#F3F4F6] flex items-center gap-4">
-                        <span className="text-gray-400 font-bold uppercase text-[10px] bg-gray-100 px-2 py-1 rounded">Search</span>
-                        <input 
-                          autoFocus
-                          type="text" 
-                          placeholder="What can I help you find..." 
-                          className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-lg font-medium"
-                        />
-                     </div>
-                     <div className="p-4 max-h-[400px] overflow-y-auto">
-                        <div className="space-y-6">
-                           <div>
-                              <h5 className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2 mb-3">Suggested Actions</h5>
-                              <div className="space-y-1">
-                                 <CommandItem label="Create New Invoice" icon="+" shortcut="Q" />
-                                 <CommandItem label="Register New Lead" icon="L" shortcut="N" />
-                                 <CommandItem label="Open Shared Inbox" icon="I" shortcut="S" />
-                              </div>
-                           </div>
-                           <div>
-                              <h5 className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2 mb-3">Recent Records</h5>
-                              <div className="space-y-1">
-                                 <CommandItem label="Order #TAP-1025" icon="#" />
-                                 <CommandItem label="Lead #LD-8821 (Acme Corp)" icon="#" />
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="p-4 bg-gray-50 border-t border-[#F3F4F6] flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        <span>ESC to close</span>
-                        <span>ENTER to select</span>
-                     </div>
-                  </motion.div>
-               </>
-            )}
-         </AnimatePresence>
+      {!isAuthenticated ? (
+        <LoginPage onLogin={handleLogin} />
+      ) : (
+        <AppShell>
+           {/* Command Palette Modal */}
+           <AnimatePresence>
+              {isCommandPaletteOpen && (
+                 <>
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      onClick={() => setIsCommandPaletteOpen(false)}
+                      className="fixed inset-0 bg-black/40 backdrop-blur-md z-[100]"
+                    />
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                      className="fixed top-[15%] left-1/2 -translate-x-1/2 w-full max-w-xl bg-white rounded-3xl shadow-2xl z-[110] overflow-hidden border border-[#E5E7EB]"
+                    >
+                       <div className="p-6 border-b border-[#F3F4F6] flex items-center gap-4">
+                          <span className="text-gray-400 font-bold uppercase text-[10px] bg-gray-100 px-2 py-1 rounded">Search</span>
+                          <input 
+                            autoFocus
+                            type="text" 
+                            placeholder="What can I help you find..." 
+                            className="flex-1 bg-transparent border-none focus:ring-0 outline-none text-lg font-medium"
+                          />
+                       </div>
+                       <div className="p-4 max-h-[400px] overflow-y-auto">
+                          <div className="space-y-6">
+                             <div>
+                                <h5 className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2 mb-3">Suggested Actions</h5>
+                                <div className="space-y-1">
+                                   <CommandItem label="Create New Invoice" icon="+" shortcut="Q" />
+                                   <CommandItem label="Register New Lead" icon="L" shortcut="N" />
+                                   <CommandItem label="Open Shared Inbox" icon="I" shortcut="S" />
+                                </div>
+                             </div>
+                             <div>
+                                <h5 className="text-[10px] text-gray-400 font-bold uppercase tracking-widest ml-2 mb-3">Recent Records</h5>
+                                <div className="space-y-1">
+                                   <CommandItem label="Order #TAP-1025" icon="#" />
+                                   <CommandItem label="Lead #LD-8821 (Acme Corp)" icon="#" />
+                                </div>
+                             </div>
+                          </div>
+                       </div>
+                       <div className="p-4 bg-gray-50 border-t border-[#F3F4F6] flex items-center justify-between text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                          <span>ESC to close</span>
+                          <span>ENTER to select</span>
+                       </div>
+                    </motion.div>
+                 </>
+              )}
+           </AnimatePresence>
 
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/leads" element={<Leads />} />
-          <Route path="/inbox" element={<SharedInbox />} />
-          <Route path="/invoices" element={<InvoiceWizard />} />
-          <Route path="/production" element={<ProductionBoard />} />
-          <Route path="/design" element={<DesignBoard />} />
-          <Route path="/orders" element={<Orders />} />
-          <Route path="/qa" element={<QA />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/shipping" element={<ShippingDashboard />} />
-          <Route path="/vendors" element={<Vendors />} />
-          <Route path="/clients" element={<Clients />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/inventory" element={<Inventory />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/activity" element={<ActivityLog />} />
-          <Route path="/call-assistant/:leadId?" element={<CallAssistant />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </AppShell>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/leads" element={<Leads />} />
+            <Route path="/inbox" element={<SharedInbox />} />
+            <Route path="/invoices" element={<InvoiceWizard />} />
+            <Route path="/production" element={<ProductionBoard />} />
+            <Route path="/design" element={<DesignBoard />} />
+            <Route path="/orders" element={<Orders />} />
+            <Route path="/qa" element={<QA />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/shipping" element={<ShippingDashboard />} />
+            <Route path="/vendors" element={<Vendors />} />
+            <Route path="/clients" element={<Clients />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/activity" element={<ActivityLog />} />
+            <Route path="/call-assistant/:leadId?" element={<CallAssistant />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AppShell>
+      )}
     </Router>
   );
 }

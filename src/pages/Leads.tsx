@@ -16,12 +16,12 @@ import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
 
 const leadsData = [
-  { id: 'LD-8821', customer: 'Acme Corp', source: 'Web Form', brand: 'TAP', sdr: 'Sarah S.', status: 'New', time: '12m ago', sla: 'critical' },
-  { id: 'LD-8822', customer: 'Global Tech', source: 'RingCentral', brand: 'Patchmakers', sdr: 'James L.', status: 'Contacted', time: '1h ago', sla: 'normal' },
-  { id: 'LD-8823', customer: 'Stark Ind.', source: 'Gmail', brand: 'Eagle UK', sdr: 'Sarah S.', status: 'Invoice Sent', time: '3h ago', sla: 'warning' },
-  { id: 'LD-8824', customer: 'Wayne Ent.', source: 'Meta Ads', brand: 'TAP', sdr: 'Unassigned', status: 'New', time: '5m ago', sla: 'critical' },
-  { id: 'LD-8825', customer: 'Pied Piper', source: 'Web Form', brand: 'Embroidered', sdr: 'James L.', status: 'Won', time: '1d ago', sla: 'done' },
-  { id: 'LD-8826', customer: 'Evil Corp', source: 'Tawk.to', brand: 'Patchmakers', sdr: 'Sarah S.', status: 'Lost', time: '2d ago', sla: 'done' },
+  { id: 'LD-8821', customer: 'Acme Corp', source: 'Web Form', brand: 'The American Patch', sdr: 'Hammad', status: 'New', time: '12m ago', sla: 'critical' },
+  { id: 'LD-8822', customer: 'Global Tech', source: 'RingCentral', brand: 'Patch Makers CA', sdr: 'Faiq', status: 'Contacted', time: '1h ago', sla: 'normal' },
+  { id: 'LD-8823', customer: 'Stark Ind.', source: 'Gmail', brand: 'Eagle Patch UK', sdr: 'Sufyan', status: 'Invoice Sent', time: '3h ago', sla: 'warning' },
+  { id: 'LD-8824', customer: 'Wayne Ent.', source: 'Meta Ads', brand: 'The Eagle Patch', sdr: 'Unassigned', status: 'New', time: '5m ago', sla: 'critical' },
+  { id: 'LD-8825', customer: 'Pied Piper', source: 'Web Form', brand: 'Embroidered Patch NZ', sdr: 'Wahid', status: 'Won', time: '1d ago', sla: 'done' },
+  { id: 'LD-8826', customer: 'Evil Corp', source: 'Tawk.to', brand: 'Embroidered Patch', sdr: 'Hammad', status: 'Lost', time: '2d ago', sla: 'done' },
 ];
 
 export default function Leads() {
@@ -195,7 +195,7 @@ export default function Leads() {
                        </div>
                        <div>
                           <h3 className="text-2xl font-black text-slate-800 tracking-tight">{leadsData.find(l => l.id === selectedLead)?.customer}</h3>
-                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Acquired via Web Form • TAP Brand</p>
+                          <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Acquired via {leadsData.find(l => l.id === selectedLead)?.source} • {leadsData.find(l => l.id === selectedLead)?.brand}</p>
                        </div>
                     </div>
                  </div>

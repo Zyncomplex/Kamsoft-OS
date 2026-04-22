@@ -39,8 +39,6 @@ const sidebarItems = [
   { icon: Truck, label: 'Shipping', path: '/shipping' },
   { icon: Users, label: 'Clients', path: '/clients' },
   { icon: BarChart3, label: 'Reports', path: '/reports' },
-  { icon: Package, label: 'Materials', path: '/inventory' },
-  { icon: FileText, label: 'Price List', path: '/pricing' },
   { icon: Clock, label: 'Activity Log', path: '/activity' },
   { icon: Settings, label: 'Settings', path: '/settings' }
 ];
@@ -50,9 +48,9 @@ function Logo({ isSidebarOpen }: { isSidebarOpen: boolean }) {
 
   return (
     <div className="flex items-center gap-3 overflow-hidden">
-      <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-indigo-900 rounded-lg overflow-hidden">
+      <div className="w-8 h-8 flex items-center justify-center shrink-0 bg-transparent overflow-hidden">
         {hasError ? (
-          <span className="text-white font-black text-lg">K</span>
+          <span className="text-indigo-900 font-black text-lg bg-indigo-50 rounded-lg w-full h-full flex items-center justify-center">K</span>
         ) : (
           <img 
             src="/logo.png" 
@@ -69,7 +67,7 @@ function Logo({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           animate={{ opacity: 1 }}
           className="font-black text-xl tracking-tighter text-indigo-900 whitespace-nowrap uppercase"
         >
-          Kamsoft
+          Operations
         </motion.span>
       )}
     </div>
@@ -148,7 +146,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </motion.div>
             )}
           </div>
-          <button className={cn(
+          <button 
+            onClick={() => {
+              localStorage.removeItem('app_authenticated');
+              window.location.reload();
+            }}
+            className={cn(
             "flex items-center gap-3 w-full p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors text-sm font-medium",
             !isSidebarOpen && "justify-center"
           )}>
@@ -181,16 +184,32 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-6">
-            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 text-slate-500 text-xs font-bold tracking-wider">
-                <span>$ USD</span>
+            <div className="hidden lg:flex items-center relative group">
+               <select className="appearance-none bg-transparent hover:bg-slate-50 border-none rounded-lg py-1.5 pl-3 pr-8 text-xs font-bold text-slate-500 tracking-wider cursor-pointer outline-none transition-colors">
+                  <option value="USD">$ USD</option>
+                  <option value="GBP">£ GBP</option>
+                  <option value="NZD">$ NZD</option>
+                  <option value="AUD">$ AUD</option>
+                  <option value="CAD">$ CAD</option>
+               </select>
+               <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <ChevronDown size={12} />
+               </div>
             </div>
-            <button className="relative p-2 text-slate-400 hover:bg-slate-50 rounded-full transition-colors">
-              <Bell size={18} />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
-            </button>
-            <button className="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-lg shadow-indigo-100 hover:scale-110 transition-transform">
-              <Plus size={18} />
-            </button>
+            
+            <div className="relative group">
+               <select className="appearance-none bg-transparent hover:bg-slate-50 border border-transparent hover:border-slate-200 rounded-lg py-1.5 pl-3 pr-8 text-sm font-black text-slate-800 tracking-tight cursor-pointer outline-none transition-colors max-w-[220px]">
+                  <option>The American Patch</option>
+                  <option>The Eagle Patch</option>
+                  <option>Eagle Patch UK</option>
+                  <option>Embroidered Patch</option>
+                  <option>Patch Makers CA</option>
+                  <option>Embroidered Patch NZ</option>
+               </select>
+               <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                  <ChevronDown size={14} />
+               </div>
+            </div>
           </div>
         </header>
 
