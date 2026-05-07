@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { ActivityLogService } from './activity-log.service';
 import { ActivityLogFilterDto } from './dto/activity-log-filter.dto';
 import { SupabaseAuthGuard } from '../../common/guards/supabase-auth.guard';

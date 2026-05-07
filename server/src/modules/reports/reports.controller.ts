@@ -13,62 +13,119 @@ export class ReportsController {
 
   private isSuperAdmin(req: any) {
     const role = req.user?.role;
-    return role === UserRole.CEO || role === UserRole.GM || role === UserRole.Admin;
+    return (
+      role === UserRole.CEO || role === UserRole.GM || role === UserRole.Admin
+    );
   }
 
   @Get('sales')
-  @Roles(UserRole.Manager, UserRole.GM, UserRole.CEO, UserRole.Admin, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Admin,
+    UserRole.SDR,
+  )
   getSalesMetrics(
     @CurrentBrand() currentBrandId: string,
     @Query('period') period: string,
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getSalesMetrics(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getSalesMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('sales/leaderboard')
-  @Roles(UserRole.Manager, UserRole.GM, UserRole.CEO, UserRole.Admin, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Admin,
+    UserRole.SDR,
+  )
   getSalesLeaderboard(
     @CurrentBrand() currentBrandId: string,
     @Query('period') period: string,
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getSalesLeaderboard(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getSalesLeaderboard(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('production')
-  @Roles(UserRole.Manager, UserRole.GM, UserRole.CEO, UserRole.Admin, UserRole.Production)
+  @Roles(
+    UserRole.Manager,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Admin,
+    UserRole.Production,
+  )
   getProductionMetrics(
     @CurrentBrand() currentBrandId: string,
     @Query('period') period: string,
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getProductionMetrics(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getProductionMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('qa')
-  @Roles(UserRole.Manager, UserRole.GM, UserRole.CEO, UserRole.Admin, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Admin,
+    UserRole.QA,
+  )
   getQaMetrics(
     @CurrentBrand() currentBrandId: string,
     @Query('period') period: string,
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getQaMetrics(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getQaMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('shipping')
-  @Roles(UserRole.Manager, UserRole.GM, UserRole.CEO, UserRole.Admin, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Admin,
+    UserRole.QA,
+  )
   getShippingMetrics(
     @CurrentBrand() currentBrandId: string,
     @Query('period') period: string,
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getShippingMetrics(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getShippingMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('revenue')
@@ -79,12 +136,27 @@ export class ReportsController {
     @Query('brand_id') brandId: string,
     @Req() req: any,
   ) {
-    return this.reportsService.getRevenueMetrics(currentBrandId, period, brandId, this.isSuperAdmin(req));
+    return this.reportsService.getRevenueMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 
   @Get('overview')
   @Roles(UserRole.GM, UserRole.CEO, UserRole.Admin)
-  getOverviewMetrics() {
-    return this.reportsService.getOverviewMetrics();
+  getOverviewMetrics(
+    @CurrentBrand() currentBrandId: string,
+    @Query('period') period: string,
+    @Query('brand_id') brandId: string,
+    @Req() req: any,
+  ) {
+    return this.reportsService.getOverviewMetrics(
+      currentBrandId,
+      period,
+      brandId,
+      this.isSuperAdmin(req),
+    );
   }
 }

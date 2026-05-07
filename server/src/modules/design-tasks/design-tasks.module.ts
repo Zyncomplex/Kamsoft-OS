@@ -4,6 +4,6 @@ import { DesignTasksService } from './design-tasks.service';
 
 @Module({
   controllers: [DesignTasksController],
-  providers: [DesignTasksService]
+  providers: [DesignTasksService],
 })
 export class DesignTasksModule {}

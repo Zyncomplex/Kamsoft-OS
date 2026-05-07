@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { ShipmentsService } from './shipments.service';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
@@ -16,7 +26,13 @@ export class ShipmentsController {
   constructor(private readonly shipmentsService: ShipmentsService) {}
 
   @Post()
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createDto: CreateShipmentDto,
@@ -25,7 +41,14 @@ export class ShipmentsController {
   }
 
   @Get('dashboard')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+    UserRole.SDR,
+  )
   getDashboard(@CurrentBrand() brandId: string) {
     return this.shipmentsService.getDashboard(brandId);
   }
@@ -47,7 +70,13 @@ export class ShipmentsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -57,7 +86,13 @@ export class ShipmentsController {
   }
 
   @Post(':id/create-label')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   createLabel(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

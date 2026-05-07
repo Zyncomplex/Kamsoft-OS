@@ -1,21 +1,59 @@
-import { Injectable, CanActivate, ExecutionContext, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
+import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
 export class BrandContextGuard implements CanActivate {
-  canActivate(context: ExecutionContext): boolean {
+  constructor(private readonly supabase: SupabaseService) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
-    
-    // We assume the active_brand_id is stored in the JWT user_metadata during login/brand switch
-    // Or it might be fetched in a middleware prior to this.
-    // For now, let's look for it in user.user_metadata or a custom claim
-    const activeBrandId = user?.user_metadata?.active_brand_id || user?.active_brand_id;
 
-    if (!activeBrandId) {
-      throw new BadRequestException('Active brand context is missing. Please select a brand.');
+    // The user object is attached to the request by SupabaseAuthGuard
+    // It contains the decoded JWT. The user ID is in the 'sub' field.
+    const userId = user?.sub || user?.id;
+
+    if (!userId) {
+      throw new BadRequestException(
+        'User identification missing from session.',
+      );
     }
 
-    request.brandId = activeBrandId;
+    const client = this.supabase.getClient();
+
+    // Fetch the latest profile data from the database to get the real active_brand_id
+    const { data: profile, error } = await client
+      .from('profiles')
+      .select('active_brand_id, is_active, role, brand_ids')
+      .eq('id', userId)
+      .single();
+
+    if (error || !profile) {
+      throw new BadRequestException('User profile not found.');
+    }
+
+    if (!profile.is_active) {
+      throw new ForbiddenException(
+        'Your account is deactivated. Please contact an administrator.',
+      );
+    }
+
+    if (!profile.active_brand_id) {
+      throw new BadRequestException(
+        'Active brand context is missing. Please select a brand in your profile.',
+      );
+    }
+
+    // Attach brand info and full profile data to the request for downstream use
+    request.brandId = profile.active_brand_id;
+    request.userProfile = profile;
+
     return true;
   }
 }

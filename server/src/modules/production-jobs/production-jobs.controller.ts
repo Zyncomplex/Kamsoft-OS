@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { ProductionJobsService } from './production-jobs.service';
 import { CreateProductionJobDto } from './dto/create-production-job.dto';
 import { UpdateProductionJobDto } from './dto/update-production-job.dto';
@@ -16,7 +26,13 @@ export class ProductionJobsController {
   constructor(private readonly productionJobsService: ProductionJobsService) {}
 
   @Post()
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.Production)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Production,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createDto: CreateProductionJobDto,
@@ -46,7 +62,13 @@ export class ProductionJobsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.Production)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Production,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -11,7 +16,7 @@ export class OrdersService {
 
   async create(brandId: string, createDto: CreateOrderDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('orders')
       .insert([
@@ -35,7 +40,9 @@ export class OrdersService {
     const client = this.supabase.getClient();
     let query = client
       .from('orders')
-      .select('*, customer:customers(name), quote:quotes(display_id)', { count: 'exact' })
+      .select('*, customer:customers(name), quote:quotes(display_id)', {
+        count: 'exact',
+      })
       .eq('brand_id', brandId);
 
     if (filterDto.status) {
@@ -71,10 +78,11 @@ export class OrdersService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('orders')
-      .select(`
+      .select(
+        `
         *,
         order_items(*),
         quote:quotes(*),
@@ -82,7 +90,8 @@ export class OrdersService {
         design_tasks(*),
         production_jobs(*),
         shipments(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -96,7 +105,7 @@ export class OrdersService {
 
   private validateStatusTransition(oldStatus: string, newStatus: string) {
     if (oldStatus === newStatus) return true;
-    
+
     if (newStatus === OrderStatus.Cancelled) return true; // Can cancel anytime
 
     const flow = [
@@ -105,7 +114,7 @@ export class OrdersService {
       OrderStatus.Production,
       OrderStatus.QA,
       OrderStatus.Shipping,
-      OrderStatus.Delivered
+      OrderStatus.Delivered,
     ];
 
     const oldIndex = flow.indexOf(oldStatus as OrderStatus);
@@ -121,13 +130,17 @@ export class OrdersService {
     }
 
     if (newIndex <= oldIndex) {
-      throw new BadRequestException(`Cannot transition order status backwards from ${oldStatus} to ${newStatus}`);
+      throw new BadRequestException(
+        `Cannot transition order status backwards from ${oldStatus} to ${newStatus}`,
+      );
     }
-    
+
     // Check if skipping steps (Optional depending on business rules, usually allowed to skip if needed, but the prompt says transitions enforced)
     if (newIndex > oldIndex + 1 && newStatus !== OrderStatus.Delivered) {
       // allowing skip to delivered just in case, but let's be strict for others
-      throw new BadRequestException(`Cannot skip order status steps. From ${oldStatus} to ${newStatus}`);
+      throw new BadRequestException(
+        `Cannot skip order status steps. From ${oldStatus} to ${newStatus}`,
+      );
     }
 
     return true;
@@ -135,9 +148,9 @@ export class OrdersService {
 
   async update(brandId: string, id: string, updateDto: UpdateOrderDto) {
     const client = this.supabase.getClient();
-    
+
     const order = await this.findOne(brandId, id);
-    
+
     if (updateDto.status) {
       this.validateStatusTransition(order.status, updateDto.status);
     }
@@ -146,7 +159,7 @@ export class OrdersService {
       .from('orders')
       .update({
         ...updateDto,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', id)
       .eq('brand_id', brandId)
@@ -159,13 +172,23 @@ export class OrdersService {
 
     // If status changed, post a system message
     if (updateDto.status && updateDto.status !== order.status) {
-      await this.postSystemMessageForOrder(brandId, order.customer_id, order.display_id, updateDto.status);
+      await this.postSystemMessageForOrder(
+        brandId,
+        order.customer_id,
+        order.display_id,
+        updateDto.status,
+      );
     }
 
     return data;
   }
 
-  private async postSystemMessageForOrder(brandId: string, customerId: string, orderDisplayId: string, newStatus: string) {
+  private async postSystemMessageForOrder(
+    brandId: string,
+    customerId: string,
+    orderDisplayId: string,
+    newStatus: string,
+  ) {
     const client = this.supabase.getClient();
     // Find a conversation for this customer
     const { data: conv } = await client
@@ -177,27 +200,38 @@ export class OrdersService {
       .single();
 
     if (conv) {
-      await client.from('messages').insert([{
-        conversation_id: conv.id,
-        sender_type: MessageSenderType.system,
-        body: `Order ${orderDisplayId} status has been updated to ${newStatus}.`
-      }]);
+      await client.from('messages').insert([
+        {
+          conversation_id: conv.id,
+          sender_type: MessageSenderType.system,
+          body: `Order ${orderDisplayId} status has been updated to ${newStatus}.`,
+        },
+      ]);
     }
   }
 
   async clone(brandId: string, id: string) {
     const order = await this.findOne(brandId, id);
-    
-    const { id: _id, display_id: _displayId, created_at: _createdAt, updated_at: _updatedAt, status: _status, order_items, ...rest } = order;
+
+    const {
+      id: _id,
+      display_id: _displayId,
+      created_at: _createdAt,
+      updated_at: _updatedAt,
+      status: _status,
+      order_items,
+      ...rest
+    } = order;
 
     // Create the new order
-    const { data: newOrder, error } = await this.supabase.getClient()
+    const { data: newOrder, error } = await this.supabase
+      .getClient()
       .from('orders')
       .insert([
         {
           ...rest,
           status: OrderStatus.Awaiting_Payment,
-        }
+        },
       ])
       .select()
       .single();
@@ -220,7 +254,7 @@ export class OrdersService {
 
   async getStats(brandId: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('orders')
       .select('status, total')
@@ -232,7 +266,7 @@ export class OrdersService {
 
     const stats = {
       total_revenue: 0,
-      by_status: {} as Record<string, number>
+      by_status: {} as Record<string, number>,
     };
 
     for (const order of data) {

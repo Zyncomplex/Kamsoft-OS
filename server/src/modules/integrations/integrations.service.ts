@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { IntegrationAdapterFactory } from './integrations.factory';
 import { ConfigureIntegrationDto } from './dto/configure-integration.dto';
@@ -22,8 +27,8 @@ export class IntegrationsService {
 
     // Return the ones in DB + missing ones as disabled
     const supported = this.factory.getAllSupportedTypes();
-    const result = supported.map(type => {
-      const existing = data.find(d => d.type === type);
+    const result = supported.map((type) => {
+      const existing = data.find((d) => d.type === type);
       if (existing) return existing;
       return { brand_id: brandId, type, is_enabled: false, config: {} };
     });
@@ -52,17 +57,20 @@ export class IntegrationsService {
 
   async configure(brandId: string, type: string, dto: ConfigureIntegrationDto) {
     const client = this.supabase.getClient();
-    
+
     // Validate adapter type
     this.factory.getAdapter(type);
 
     const { data, error } = await client
       .from('integrations')
-      .upsert({
-        brand_id: brandId,
-        type,
-        config: dto.config,
-      }, { onConflict: 'brand_id, type' })
+      .upsert(
+        {
+          brand_id: brandId,
+          type,
+          config: dto.config,
+        },
+        { onConflict: 'brand_id, type' },
+      )
       .select()
       .single();
 
@@ -75,12 +83,17 @@ export class IntegrationsService {
     const integration = await this.findOne(brandId, type);
 
     if (Object.keys(integration.config || {}).length === 0) {
-      throw new BadRequestException('Cannot enable integration without configuration.');
+      throw new BadRequestException(
+        'Cannot enable integration without configuration.',
+      );
     }
 
     const { data, error } = await client
       .from('integrations')
-      .upsert({ brand_id: brandId, type, is_enabled: true }, { onConflict: 'brand_id, type' })
+      .upsert(
+        { brand_id: brandId, type, is_enabled: true },
+        { onConflict: 'brand_id, type' },
+      )
       .select()
       .single();
 
@@ -92,7 +105,10 @@ export class IntegrationsService {
     const client = this.supabase.getClient();
     const { data, error } = await client
       .from('integrations')
-      .upsert({ brand_id: brandId, type, is_enabled: false }, { onConflict: 'brand_id, type' })
+      .upsert(
+        { brand_id: brandId, type, is_enabled: false },
+        { onConflict: 'brand_id, type' },
+      )
       .select()
       .single();
 
@@ -103,7 +119,7 @@ export class IntegrationsService {
   async testConnection(brandId: string, type: string) {
     const integration = await this.findOne(brandId, type);
     const adapter = this.factory.getAdapter(type);
-    
+
     await adapter.connect(integration.config || {});
     const result = await adapter.testConnection();
     await adapter.disconnect();
@@ -112,7 +128,10 @@ export class IntegrationsService {
   }
 
   // Get a connected adapter for use by other modules
-  async getConnectedAdapter(brandId: string, type: string): Promise<BaseAdapter | null> {
+  async getConnectedAdapter(
+    brandId: string,
+    type: string,
+  ): Promise<BaseAdapter | null> {
     const integration = await this.findOne(brandId, type);
     if (!integration.is_enabled) return null;
 

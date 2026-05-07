@@ -6,6 +6,6 @@ import { ActivityLogInterceptor } from './activity-log.interceptor';
 @Module({
   controllers: [ActivityLogController],
   providers: [ActivityLogService, ActivityLogInterceptor],
-  exports: [ActivityLogService, ActivityLogInterceptor]
+  exports: [ActivityLogService, ActivityLogInterceptor],
 })
 export class ActivityLogModule {}

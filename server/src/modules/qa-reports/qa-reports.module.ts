@@ -4,6 +4,6 @@ import { QaReportsService } from './qa-reports.service';
 
 @Module({
   controllers: [QaReportsController],
-  providers: [QaReportsService]
+  providers: [QaReportsService],
 })
 export class QaReportsModule {}

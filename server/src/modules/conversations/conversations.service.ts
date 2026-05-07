@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
@@ -11,9 +16,11 @@ export class ConversationsService {
 
   async create(brandId: string, createDto: CreateConversationDto) {
     const client = this.supabase.getClient();
-    
+
     if (!createDto.lead_id && !createDto.customer_id) {
-      throw new BadRequestException('A conversation must be linked to either a lead or a customer.');
+      throw new BadRequestException(
+        'A conversation must be linked to either a lead or a customer.',
+      );
     }
 
     const { data, error } = await client
@@ -38,7 +45,9 @@ export class ConversationsService {
     const client = this.supabase.getClient();
     let query = client
       .from('conversations')
-      .select('*, lead:leads(display_id), customer:customers(name)', { count: 'exact' })
+      .select('*, lead:leads(display_id), customer:customers(name)', {
+        count: 'exact',
+      })
       .eq('brand_id', brandId);
 
     if (filterDto.channel) {
@@ -47,7 +56,9 @@ export class ConversationsService {
     if (filterDto.is_resolved !== undefined) {
       // The query parameter comes as string 'true'/'false' from query string usually,
       // Nest ValidationPipe transform handles it if configured properly, but fallback string check:
-      const resolved = filterDto.is_resolved === true || (filterDto.is_resolved as any) === 'true';
+      const resolved =
+        filterDto.is_resolved === true ||
+        (filterDto.is_resolved as any) === 'true';
       query = query.eq('is_resolved', resolved);
     }
     if (filterDto.lead_id) {
@@ -80,15 +91,17 @@ export class ConversationsService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('conversations')
-      .select(`
+      .select(
+        `
         *,
         lead:leads(display_id),
         customer:customers(name),
         messages(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -102,7 +115,7 @@ export class ConversationsService {
 
   async update(brandId: string, id: string, updateDto: UpdateConversationDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('conversations')
       .update(updateDto)
@@ -114,7 +127,7 @@ export class ConversationsService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     if (!data) {
       throw new NotFoundException(`Conversation with ID ${id} not found`);
     }
@@ -122,7 +135,12 @@ export class ConversationsService {
     return data;
   }
 
-  async addMessage(brandId: string, conversationId: string, senderId: string, createMessageDto: CreateMessageDto) {
+  async addMessage(
+    brandId: string,
+    conversationId: string,
+    senderId: string,
+    createMessageDto: CreateMessageDto,
+  ) {
     const client = this.supabase.getClient();
 
     // First ensure conversation belongs to brand
@@ -134,7 +152,9 @@ export class ConversationsService {
       .single();
 
     if (convError || !conv) {
-      throw new NotFoundException(`Conversation with ID ${conversationId} not found`);
+      throw new NotFoundException(
+        `Conversation with ID ${conversationId} not found`,
+      );
     }
 
     const { data, error } = await client
@@ -156,7 +176,12 @@ export class ConversationsService {
     return data;
   }
 
-  async getMessages(brandId: string, conversationId: string, page = 1, limit = 50) {
+  async getMessages(
+    brandId: string,
+    conversationId: string,
+    page = 1,
+    limit = 50,
+  ) {
     const client = this.supabase.getClient();
 
     const { data: conv, error: convError } = await client
@@ -167,7 +192,9 @@ export class ConversationsService {
       .single();
 
     if (convError || !conv) {
-      throw new NotFoundException(`Conversation with ID ${conversationId} not found`);
+      throw new NotFoundException(
+        `Conversation with ID ${conversationId} not found`,
+      );
     }
 
     const from = (page - 1) * limit;

@@ -1,4 +1,10 @@
-import { IsUUID, IsNumber, IsString, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsUUID,
+  IsNumber,
+  IsString,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 
 export class CreateInvoiceDto {
   @IsUUID()

@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -17,10 +27,7 @@ export class InvoicesController {
 
   @Post()
   @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
-  create(
-    @CurrentBrand() brandId: string,
-    @Body() createDto: CreateInvoiceDto,
-  ) {
+  create(@CurrentBrand() brandId: string, @Body() createDto: CreateInvoiceDto) {
     return this.invoicesService.create(brandId, createDto);
   }
 

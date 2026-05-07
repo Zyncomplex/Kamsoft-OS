@@ -15,10 +15,14 @@ export class SupabaseService {
     }
 
     const supabaseUrl = this.configService.get<string>('supabase.url');
-    const supabaseKey = this.configService.get<string>('supabase.serviceRoleKey');
+    const supabaseKey = this.configService.get<string>(
+      'supabase.serviceRoleKey',
+    );
 
     if (!supabaseUrl || !supabaseKey) {
-      this.logger.warn('Supabase URL or Service Role Key is missing. Check your environment variables.');
+      this.logger.warn(
+        'Supabase URL or Service Role Key is missing. Check your environment variables.',
+      );
       throw new UnauthorizedException('Missing token');
     }
 

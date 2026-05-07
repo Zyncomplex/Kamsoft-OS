@@ -11,8 +11,7 @@ import {
   Pie, 
   Cell,
   LineChart,
-  Line,
-  Legend
+  Line
 } from 'recharts';
 import { 
   Download, 
@@ -21,31 +20,34 @@ import {
   ArrowUpRight, 
   ArrowDownRight 
 } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { useReports } from '../hooks/useReports';
 import { motion } from 'motion/react';
 
-const monthlyRev = [
-  { month: 'Jan', rev: 45000, target: 40000 },
-  { month: 'Feb', rev: 52000, target: 42000 },
-  { month: 'Mar', rev: 48000, target: 45000 },
-  { month: 'Apr', rev: 61000, target: 48000 },
-];
-
-const sourceData = [
-  { name: 'Web Forms', value: 45, color: '#000000' },
-  { name: 'RingCentral', value: 25, color: '#4F46E5' },
-  { name: 'Instagram', value: 20, color: '#10B981' },
-  { name: 'Other', value: 10, color: '#F59E0B' },
-];
-
-const sdrPerformance = [
-  { name: 'Hammad', closed: 85, revenue: 120000 },
-  { name: 'Faiq', closed: 62, revenue: 95000 },
-  { name: 'Sufyan', closed: 45, revenue: 72000 },
-  { name: 'Wahid', closed: 38, revenue: 68000 },
-];
-
 export default function Reports() {
+  const { metrics, loading } = useReports();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[60vh] text-slate-300 font-black uppercase text-[10px] tracking-widest">
+        Running operations protocol...
+      </div>
+    );
+  }
+
+  // Transform data for charts
+  const monthlyRev = metrics.revenue_trend?.map((item: any) => ({
+    month: item.month,
+    rev: item.revenue,
+    target: item.revenue * 0.8 // Mock target for UI
+  })) || [];
+
+  const sourceData = metrics.leads_by_source?.map((item: any) => ({
+    name: item.source,
+    value: item.count
+  })) || [];
+
+  const sdrPerformance = metrics.sdr_performance || [];
+
   return (
     <div className="space-y-8 pb-12">
       {/* Top Controls */}
@@ -106,10 +108,10 @@ export default function Reports() {
          <div className="bg-white p-10 rounded-[32px] border border-slate-200 shadow-sm flex flex-col">
             <h3 className="font-black text-slate-800 text-lg tracking-tight uppercase mb-8">Asset Rankings</h3>
             <div className="space-y-8 flex-1">
-               {sdrPerformance.map((sdr, i) => (
+               {sdrPerformance.map((sdr: any, i: number) => (
                   <div key={i} className="flex items-center gap-5 group cursor-pointer">
-                     <div className="w-12 h-12 rounded-2xl bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
-                        <img src={`https://picsum.photos/seed/${sdr.name}/120/120`} alt={sdr.name} referrerPolicy="no-referrer" />
+                     <div className="w-12 h-12 rounded-2xl bg-slate-100 border-2 border-white shadow-sm flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-110 transition-transform font-bold text-slate-400 uppercase">
+                        {sdr.name.substring(0, 2)}
                      </div>
                      <div className="flex-1 overflow-hidden">
                         <div className="flex justify-between items-end mb-2">
@@ -119,7 +121,7 @@ export default function Reports() {
                         <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                            <motion.div 
                               initial={{ width: 0 }}
-                              animate={{ width: `${(sdr.closed/100)*100}%` }}
+                              animate={{ width: `${Math.min(100, (sdr.closed_leads / 50) * 100)}%` }}
                               transition={{ duration: 1, delay: i * 0.1 }}
                               className="h-full bg-indigo-600 rounded-full shadow-lg shadow-indigo-100" 
                            />
@@ -127,6 +129,9 @@ export default function Reports() {
                      </div>
                   </div>
                ))}
+               {sdrPerformance.length === 0 && (
+                 <div className="flex-1 flex items-center justify-center text-[9px] font-black text-slate-300 uppercase tracking-widest">No active assets</div>
+               )}
             </div>
             <button className="mt-10 p-4 border border-slate-100 rounded-2xl text-[10px] font-black text-slate-400 hover:text-indigo-600 hover:border-indigo-100 hover:bg-indigo-50 transition-all flex items-center justify-center gap-3 uppercase tracking-widest">
                Detailed Expansion <ArrowUpRight size={14} />
@@ -149,10 +154,10 @@ export default function Reports() {
                            paddingAngle={8}
                            dataKey="value"
                         >
-                           {sourceData.map((entry, index) => (
+                           {sourceData.map((_entry: any, index: number) => (
                               <Cell 
                                  key={`cell-${index}`} 
-                                 fill={index === 0 ? '#4F46E5' : index === 1 ? '#0EA5E9' : index === 2 ? '#10B981' : '#F59E0B'} 
+                                 fill={['#4F46E5', '#0EA5E9', '#10B981', '#F59E0B', '#8B5CF6'][index % 5]} 
                                  strokeWidth={0}
                               />
                            ))}
@@ -161,12 +166,12 @@ export default function Reports() {
                      </PieChart>
                   </ResponsiveContainer>
                </div>
-               <div className="space-y-4 shrink-0 bg-slate-50/50 p-6 rounded-3xl border border-slate-50">
-                  {sourceData.map((item, i) => (
+               <div className="space-y-4 shrink-0 bg-slate-50/50 p-6 rounded-3xl border border-slate-50 min-w-[160px]">
+                  {sourceData.map((item: any, i: number) => (
                      <div key={i} className="flex items-center gap-4">
-                        <div className="w-4 h-4 rounded-lg shadow-sm" style={{ backgroundColor: i === 0 ? '#4F46E5' : i === 1 ? '#0EA5E9' : i === 2 ? '#10B981' : '#F59E0B' }} />
+                        <div className="w-4 h-4 rounded-lg shadow-sm" style={{ backgroundColor: ['#4F46E5', '#0EA5E9', '#10B981', '#F59E0B', '#8B5CF6'][i % 5] }} />
                         <span className="text-[11px] font-black text-slate-600 uppercase tracking-tight">{item.name}</span>
-                        <span className="text-[11px] font-black text-slate-800 ml-auto bg-white px-2 py-0.5 rounded-lg border border-slate-100">{item.value}%</span>
+                        <span className="text-[11px] font-black text-slate-800 ml-auto bg-white px-2 py-0.5 rounded-lg border border-slate-100">{item.value}</span>
                      </div>
                   ))}
                </div>
@@ -195,7 +200,7 @@ export default function Reports() {
                         stroke="#F43F5E" 
                         strokeWidth={4} 
                         dot={{ fill: '#F43F5E', strokeWidth: 4, r: 6, stroke: '#FFFFFF' }} 
-                        activeDot={{ r: 8, strokeWidth: 0, shadow: '0 0 20px rgba(244, 63, 94, 0.4)' }}
+                        activeDot={{ r: 8, strokeWidth: 0 }}
                      />
                      <Tooltip 
                         contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.1)', padding: '20px' }} 

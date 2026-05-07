@@ -3,7 +3,9 @@ import { CreateProductionJobDto } from './create-production-job.dto';
 import { ProductionStatus } from '../../../types';
 import { IsEnum, IsOptional, IsUUID } from 'class-validator';
 
-export class UpdateProductionJobDto extends PartialType(CreateProductionJobDto) {
+export class UpdateProductionJobDto extends PartialType(
+  CreateProductionJobDto,
+) {
   @IsEnum(ProductionStatus)
   @IsOptional()
   status?: ProductionStatus;

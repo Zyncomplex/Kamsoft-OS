@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateQuoteDto, QuoteItemDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
@@ -11,56 +16,80 @@ export class QuotesService {
 
   validateQuoteItems(items: QuoteItemDto[]) {
     const warnings: string[] = [];
-    
+
     for (const item of items) {
-      if (item.patch_type?.toLowerCase() === 'pvc' && item.backing?.toLowerCase() === 'iron-on') {
-        warnings.push('Heat risk: PVC patches should not typically use iron-on backing.');
+      if (
+        item.patch_type?.toLowerCase() === 'pvc' &&
+        item.backing?.toLowerCase() === 'iron-on'
+      ) {
+        warnings.push(
+          'Heat risk: PVC patches should not typically use iron-on backing.',
+        );
       }
-      if (item.patch_type?.toLowerCase() === 'leather' && item.backing?.toLowerCase() === 'merrow') {
-        throw new BadRequestException('Invalid combo: Leather patches cannot have merrow borders.');
+      if (
+        item.patch_type?.toLowerCase() === 'leather' &&
+        item.backing?.toLowerCase() === 'merrow'
+      ) {
+        throw new BadRequestException(
+          'Invalid combo: Leather patches cannot have merrow borders.',
+        );
       }
-      
+
       // Try to parse dimensions like "4x4" or "4 inches" to find if > 12in
       const sizeMatch = item.size?.match(/(\d+)/);
       if (sizeMatch && parseInt(sizeMatch[1], 10) > 12) {
         warnings.push('Oversized: Dimension exceeds 12 inches.');
       }
-      
+
       if (item.colors > 15) {
-        warnings.push('High thread count: Over 15 colors may cause production delays or issues.');
+        warnings.push(
+          'High thread count: Over 15 colors may cause production delays or issues.',
+        );
       }
     }
-    
+
     return warnings;
   }
 
-  calculateTotals(items: QuoteItemDto[]) {
+  async calculateTotals(brandId: string, items: QuoteItemDto[]) {
+    const client = this.supabase.getClient();
+
+    // Fetch brand settings for tax and currency
+    const { data: brand, error } = await client
+      .from('brands')
+      .select('settings, currency')
+      .eq('id', brandId)
+      .single();
+
+    const taxRate = brand?.settings?.tax_rate || 0.1; // Default 10%
+    const currency = brand?.currency || 'USD';
+
     let subtotal = 0;
     for (const item of items) {
       subtotal += item.quantity * item.unit_price;
     }
-    const tax = subtotal * 0.1; // Default 10% tax for example, or based on brand settings
+    const tax = subtotal * taxRate;
     const total = subtotal + tax;
-    
+
     return {
       subtotal,
       tax,
       total,
-      currency: 'USD' // Usually pulled from brand config
+      currency,
     };
   }
 
   async create(brandId: string, createQuoteDto: CreateQuoteDto) {
     const client = this.supabase.getClient();
-    
+
     let warnings: string[] = [];
     let totals = { subtotal: 0, tax: 0, total: 0 };
-    
+
     if (createQuoteDto.items && createQuoteDto.items.length > 0) {
       warnings = this.validateQuoteItems(createQuoteDto.items);
-      totals = this.calculateTotals(createQuoteDto.items);
+      totals = await this.calculateTotals(brandId, createQuoteDto.items);
     }
-    
+
     const validUntil = new Date();
     validUntil.setDate(validUntil.getDate() + 30); // 30 days validity
 
@@ -88,7 +117,9 @@ export class QuotesService {
     const client = this.supabase.getClient();
     let query = client
       .from('quotes')
-      .select('*, customer:customers(name), lead:leads(display_id)', { count: 'exact' })
+      .select('*, customer:customers(name), lead:leads(display_id)', {
+        count: 'exact',
+      })
       .eq('brand_id', brandId);
 
     if (filterDto.status) {
@@ -124,14 +155,16 @@ export class QuotesService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('quotes')
-      .select(`
+      .select(
+        `
         *,
         customer:customers(*),
         lead:leads(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -150,11 +183,15 @@ export class QuotesService {
     }
 
     let warnings: string[] = [];
-    let totals = { subtotal: quote.subtotal, tax: quote.tax, total: quote.total };
+    let totals = {
+      subtotal: quote.subtotal,
+      tax: quote.tax,
+      total: quote.total,
+    };
 
     if (updateQuoteDto.items) {
       warnings = this.validateQuoteItems(updateQuoteDto.items);
-      totals = this.calculateTotals(updateQuoteDto.items);
+      totals = await this.calculateTotals(brandId, updateQuoteDto.items);
     }
 
     const client = this.supabase.getClient();
@@ -189,13 +226,13 @@ export class QuotesService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     return data;
   }
 
   async accept(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     // First get the quote
     const quote = await this.findOne(brandId, id);
     if (quote.status === QuoteStatus.Accepted) {
@@ -217,20 +254,22 @@ export class QuotesService {
           status: OrderStatus.Awaiting_Payment,
           total: quote.total,
           currency: quote.currency,
-        }
+        },
       ])
       .select()
       .single();
 
     if (orderError) {
-      throw new InternalServerErrorException('Failed to create order: ' + orderError.message);
+      throw new InternalServerErrorException(
+        'Failed to create order: ' + orderError.message,
+      );
     }
 
     // Insert order items
     if (quote.items && quote.items.length > 0) {
       const orderItems = quote.items.map((item: any) => ({
         ...item,
-        order_id: order.id
+        order_id: order.id,
       }));
 
       await client.from('order_items').insert(orderItems);
@@ -255,13 +294,19 @@ export class QuotesService {
 
   async clone(brandId: string, id: string) {
     const quote = await this.findOne(brandId, id);
-    
+
     // Remove specific IDs to clone properly
-    const { id: _id, display_id: _displayId, created_at: _createdAt, status: _status, ...rest } = quote;
+    const {
+      id: _id,
+      display_id: _displayId,
+      created_at: _createdAt,
+      status: _status,
+      ...rest
+    } = quote;
 
     return this.create(brandId, {
       ...rest,
-      notes: (rest.notes || '') + '\n(Cloned from ' + quote.display_id + ')'
+      notes: (rest.notes || '') + '\n(Cloned from ' + quote.display_id + ')',
     });
   }
 }

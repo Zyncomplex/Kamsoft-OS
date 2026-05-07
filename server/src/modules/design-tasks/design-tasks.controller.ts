@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { DesignTasksService } from './design-tasks.service';
 import { CreateDesignTaskDto } from './dto/create-design-task.dto';
 import { UpdateDesignTaskDto } from './dto/update-design-task.dto';
@@ -17,7 +28,13 @@ export class DesignTasksController {
   constructor(private readonly designTasksService: DesignTasksService) {}
 
   @Post()
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.SDR,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createDto: CreateDesignTaskDto,
@@ -42,7 +59,13 @@ export class DesignTasksController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.Designer)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Designer,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -52,7 +75,13 @@ export class DesignTasksController {
   }
 
   @Post(':id/versions')
-  @Roles(UserRole.Designer, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.Designer,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   uploadVersion(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -79,7 +108,14 @@ export class DesignTasksController {
   }
 
   @Post(':id/submit')
-  @Roles(UserRole.Designer, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.SDR)
+  @Roles(
+    UserRole.Designer,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.SDR,
+  )
   submitForApproval(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -88,7 +124,13 @@ export class DesignTasksController {
   }
 
   @Post(':id/approve')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.SDR,
+  )
   approve(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -97,7 +139,13 @@ export class DesignTasksController {
   }
 
   @Post(':id/request-revision')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.SDR)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.SDR,
+  )
   requestRevision(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

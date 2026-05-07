@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -17,10 +27,7 @@ export class OrdersController {
 
   @Post()
   @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
-  create(
-    @CurrentBrand() brandId: string,
-    @Body() createDto: CreateOrderDto,
-  ) {
+  create(@CurrentBrand() brandId: string, @Body() createDto: CreateOrderDto) {
     return this.ordersService.create(brandId, createDto);
   }
 
@@ -30,10 +37,7 @@ export class OrdersController {
   }
 
   @Get()
-  findAll(
-    @CurrentBrand() brandId: string,
-    @Query() filterDto: OrderFilterDto,
-  ) {
+  findAll(@CurrentBrand() brandId: string, @Query() filterDto: OrderFilterDto) {
     return this.ordersService.findAll(brandId, filterDto);
   }
 
@@ -46,7 +50,14 @@ export class OrdersController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.Production, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.Production,
+    UserRole.QA,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

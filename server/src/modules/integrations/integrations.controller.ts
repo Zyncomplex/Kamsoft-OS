@@ -21,10 +21,7 @@ export class IntegrationsController {
 
   @Get(':type')
   @Roles(UserRole.Admin, UserRole.CEO, UserRole.GM, UserRole.Manager)
-  findOne(
-    @CurrentBrand() brandId: string,
-    @Param('type') type: string,
-  ) {
+  findOne(@CurrentBrand() brandId: string, @Param('type') type: string) {
     return this.integrationsService.findOne(brandId, type);
   }
 
@@ -40,28 +37,19 @@ export class IntegrationsController {
 
   @Post(':type/test')
   @Roles(UserRole.Admin, UserRole.CEO, UserRole.GM)
-  testConnection(
-    @CurrentBrand() brandId: string,
-    @Param('type') type: string,
-  ) {
+  testConnection(@CurrentBrand() brandId: string, @Param('type') type: string) {
     return this.integrationsService.testConnection(brandId, type);
   }
 
   @Post(':type/enable')
   @Roles(UserRole.Admin)
-  enable(
-    @CurrentBrand() brandId: string,
-    @Param('type') type: string,
-  ) {
+  enable(@CurrentBrand() brandId: string, @Param('type') type: string) {
     return this.integrationsService.enable(brandId, type);
   }
 
   @Post(':type/disable')
   @Roles(UserRole.Admin)
-  disable(
-    @CurrentBrand() brandId: string,
-    @Param('type') type: string,
-  ) {
+  disable(@CurrentBrand() brandId: string, @Param('type') type: string) {
     return this.integrationsService.disable(brandId, type);
   }
 }

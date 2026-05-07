@@ -20,6 +20,7 @@ import { ShipmentsModule } from './modules/shipments/shipments.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { ActivityLogModule } from './modules/activity-log/activity-log.module';
+import { VendorsModule } from './modules/vendors/vendors.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { ActivityLogInterceptor } from './modules/activity-log/activity-log.interceptor';
 
@@ -43,6 +44,7 @@ import { ActivityLogInterceptor } from './modules/activity-log/activity-log.inte
     ProductionJobsModule,
     QaReportsModule,
     ShipmentsModule,
+    VendorsModule,
     IntegrationsModule,
     ReportsModule,
     ActivityLogModule,

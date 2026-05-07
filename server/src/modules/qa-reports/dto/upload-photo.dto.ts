@@ -4,7 +4,7 @@ export enum PhotoType {
   Front = 'front',
   Back = 'back',
   Detail = 'detail',
-  Defect = 'defect'
+  Defect = 'defect',
 }
 
 export class UploadPhotoDto {

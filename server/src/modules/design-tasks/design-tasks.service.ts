@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateDesignTaskDto } from './dto/create-design-task.dto';
 import { UpdateDesignTaskDto } from './dto/update-design-task.dto';
@@ -12,7 +17,7 @@ export class DesignTasksService {
 
   async create(brandId: string, createDto: CreateDesignTaskDto) {
     const client = this.supabase.getClient();
-    
+
     // Auto-create from order
     const { data, error } = await client
       .from('design_tasks')
@@ -78,14 +83,16 @@ export class DesignTasksService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('design_tasks')
-      .select(`
+      .select(
+        `
         *,
         order:orders(*),
         designer:profiles!designer_id(full_name, avatar_url)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -99,7 +106,7 @@ export class DesignTasksService {
 
   async update(brandId: string, id: string, updateDto: UpdateDesignTaskDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('design_tasks')
       .update(updateDto)
@@ -111,7 +118,7 @@ export class DesignTasksService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     if (!data) {
       throw new NotFoundException(`Design task with ID ${id} not found`);
     }
@@ -119,19 +126,25 @@ export class DesignTasksService {
     return data;
   }
 
-  async uploadVersion(brandId: string, id: string, versionDto: UploadVersionDto) {
+  async uploadVersion(
+    brandId: string,
+    id: string,
+    versionDto: UploadVersionDto,
+  ) {
     const client = this.supabase.getClient();
     const task = await this.findOne(brandId, id);
 
     if (task.status === DesignStatus.Approved) {
-      throw new BadRequestException('Cannot upload versions to an approved design task.');
+      throw new BadRequestException(
+        'Cannot upload versions to an approved design task.',
+      );
     }
 
     const newVersionNum = (task.current_version || 0) + 1;
     const newVersion = {
       version: newVersionNum,
       ...versionDto,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     const versions = [...(task.versions || []), newVersion];
@@ -141,7 +154,7 @@ export class DesignTasksService {
       .update({
         versions,
         current_version: newVersionNum,
-        status: DesignStatus.In_Progress
+        status: DesignStatus.In_Progress,
       })
       .eq('id', id)
       .eq('brand_id', brandId)
@@ -169,7 +182,9 @@ export class DesignTasksService {
   async submitForApproval(brandId: string, id: string) {
     const task = await this.findOne(brandId, id);
     if (!task.versions || task.versions.length === 0) {
-      throw new BadRequestException('Cannot submit for approval without at least one version uploaded.');
+      throw new BadRequestException(
+        'Cannot submit for approval without at least one version uploaded.',
+      );
     }
     return this.update(brandId, id, { status: DesignStatus.Awaiting_Approval });
   }
@@ -194,24 +209,30 @@ export class DesignTasksService {
     if (error) throw new InternalServerErrorException(error.message);
 
     // Update order: append to artwork_files, transition status to Production
-    const finalVersion = task.versions.find((v: any) => v.version === task.current_version);
+    const finalVersion = task.versions.find(
+      (v: any) => v.version === task.current_version,
+    );
     const order = task.order;
     const currentArtworkFiles = order.artwork_files || [];
-    
+
     await client
       .from('orders')
       .update({
         status: OrderStatus.Production,
         artwork_files: [...currentArtworkFiles, finalVersion],
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', task.order_id)
       .eq('brand_id', brandId);
 
-    // Auto system msg for transition already happens via orders.service if we were calling it, 
+    // Auto system msg for transition already happens via orders.service if we were calling it,
     // but doing it directly via DB won't trigger nestjs orders.service logic.
     // We will post a system message manually here.
-    await this.postSystemMessage(brandId, order.customer_id, `Design for order ${order.display_id} approved. Order moved to Production.`);
+    await this.postSystemMessage(
+      brandId,
+      order.customer_id,
+      `Design for order ${order.display_id} approved. Order moved to Production.`,
+    );
 
     return data;
   }
@@ -221,14 +242,16 @@ export class DesignTasksService {
     const task = await this.findOne(brandId, id);
 
     if (task.status === DesignStatus.Approved) {
-      throw new BadRequestException('Cannot request revision on an approved design.');
+      throw new BadRequestException(
+        'Cannot request revision on an approved design.',
+      );
     }
 
     const { data, error } = await client
       .from('design_tasks')
-      .update({ 
+      .update({
         status: DesignStatus.Revision,
-        customer_feedback: feedback 
+        customer_feedback: feedback,
       })
       .eq('id', id)
       .eq('brand_id', brandId)
@@ -238,12 +261,20 @@ export class DesignTasksService {
     if (error) throw new InternalServerErrorException(error.message);
 
     // Post system message
-    await this.postSystemMessage(brandId, task.order.customer_id, `Revision requested for order ${task.order.display_id}: ${feedback}`);
+    await this.postSystemMessage(
+      brandId,
+      task.order.customer_id,
+      `Revision requested for order ${task.order.display_id}: ${feedback}`,
+    );
 
     return data;
   }
 
-  private async postSystemMessage(brandId: string, customerId: string, body: string) {
+  private async postSystemMessage(
+    brandId: string,
+    customerId: string,
+    body: string,
+  ) {
     const client = this.supabase.getClient();
     const { data: conv } = await client
       .from('conversations')
@@ -254,11 +285,13 @@ export class DesignTasksService {
       .single();
 
     if (conv) {
-      await client.from('messages').insert([{
-        conversation_id: conv.id,
-        sender_type: MessageSenderType.system,
-        body
-      }]);
+      await client.from('messages').insert([
+        {
+          conversation_id: conv.id,
+          sender_type: MessageSenderType.system,
+          body,
+        },
+      ]);
     }
   }
 }

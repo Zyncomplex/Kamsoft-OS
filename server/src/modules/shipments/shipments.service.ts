@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { IntegrationsService } from '../integrations/integrations.service';
 import { CreateShipmentDto } from './dto/create-shipment.dto';
@@ -15,12 +20,14 @@ export class ShipmentsService {
 
   async create(brandId: string, createDto: CreateShipmentDto) {
     const client = this.supabase.getClient();
-    
-    const initialHistory = [{
-      status: ShipmentStatus.Label_Created,
-      timestamp: new Date().toISOString(),
-      location: 'Warehouse'
-    }];
+
+    const initialHistory = [
+      {
+        status: ShipmentStatus.Label_Created,
+        timestamp: new Date().toISOString(),
+        location: 'Warehouse',
+      },
+    ];
 
     const { data, error } = await client
       .from('shipments')
@@ -47,7 +54,8 @@ export class ShipmentsService {
       .eq('brand_id', brandId);
 
     if (filterDto.status) query = query.eq('status', filterDto.status);
-    if (filterDto.carrier) query = query.ilike('carrier', `%${filterDto.carrier}%`);
+    if (filterDto.carrier)
+      query = query.ilike('carrier', `%${filterDto.carrier}%`);
     if (filterDto.order_id) query = query.eq('order_id', filterDto.order_id);
 
     const page = filterDto.page || 1;
@@ -74,13 +82,15 @@ export class ShipmentsService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('shipments')
-      .select(`
+      .select(
+        `
         *,
         order:orders(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -94,7 +104,7 @@ export class ShipmentsService {
     const shipment = await this.findOne(brandId, id);
 
     let newHistory = shipment.status_history || [];
-    
+
     if (updateDto.status && updateDto.status !== shipment.status) {
       newHistory = [
         ...newHistory,
@@ -102,7 +112,7 @@ export class ShipmentsService {
           status: updateDto.status,
           timestamp: new Date().toISOString(),
           location: updateDto.location || null,
-        }
+        },
       ];
     }
 
@@ -133,10 +143,16 @@ export class ShipmentsService {
 
   async createLabel(brandId: string, id: string) {
     const shipment = await this.findOne(brandId, id);
-    const adapter = await this.integrations.getConnectedAdapter(brandId, shipment.carrier.toLowerCase());
-    
+    const adapter = await this.integrations.getConnectedAdapter(
+      brandId,
+      shipment.carrier.toLowerCase(),
+    );
+
     if (!adapter) {
-      return { success: false, message: 'Adapter not configured for ' + shipment.carrier };
+      return {
+        success: false,
+        message: 'Adapter not configured for ' + shipment.carrier,
+      };
     }
 
     // Since these are stubbed in Phase 4:
@@ -145,10 +161,16 @@ export class ShipmentsService {
 
   async refreshTracking(brandId: string, id: string) {
     const shipment = await this.findOne(brandId, id);
-    const adapter = await this.integrations.getConnectedAdapter(brandId, shipment.carrier.toLowerCase());
-    
+    const adapter = await this.integrations.getConnectedAdapter(
+      brandId,
+      shipment.carrier.toLowerCase(),
+    );
+
     if (!adapter) {
-      return { success: false, message: 'Adapter not configured for ' + shipment.carrier };
+      return {
+        success: false,
+        message: 'Adapter not configured for ' + shipment.carrier,
+      };
     }
 
     // Since these are stubbed in Phase 4:
@@ -165,9 +187,12 @@ export class ShipmentsService {
     if (error) throw new InternalServerErrorException(error.message);
 
     return {
-      inTransit: data.filter(s => s.status === ShipmentStatus.In_Transit).length,
-      delivered: data.filter(s => s.status === ShipmentStatus.Delivered).length,
-      exceptions: data.filter(s => s.status === ShipmentStatus.Exception).length,
+      inTransit: data.filter((s) => s.status === ShipmentStatus.In_Transit)
+        .length,
+      delivered: data.filter((s) => s.status === ShipmentStatus.Delivered)
+        .length,
+      exceptions: data.filter((s) => s.status === ShipmentStatus.Exception)
+        .length,
     };
   }
 }

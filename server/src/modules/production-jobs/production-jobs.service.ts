@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateProductionJobDto } from './dto/create-production-job.dto';
 import { UpdateProductionJobDto } from './dto/update-production-job.dto';
@@ -24,11 +29,15 @@ export class ProductionJobsService {
       throw new BadRequestException('Order not found or invalid');
     }
 
-    const designFileUrl = order.artwork_files && order.artwork_files.length > 0 
-      ? order.artwork_files[order.artwork_files.length - 1].file_url 
-      : null;
+    const designFileUrl =
+      order.artwork_files && order.artwork_files.length > 0
+        ? order.artwork_files[order.artwork_files.length - 1].file_url
+        : null;
 
-    const totalQuantity = order.order_items.reduce((acc: number, item: any) => acc + item.quantity, 0);
+    const totalQuantity = order.order_items.reduce(
+      (acc: number, item: any) => acc + item.quantity,
+      0,
+    );
 
     const { data, error } = await client
       .from('production_jobs')
@@ -56,11 +65,15 @@ export class ProductionJobsService {
     const client = this.supabase.getClient();
     let query = client
       .from('production_jobs')
-      .select('*, order:orders(display_id), assigned_to:profiles!assigned_to_id(full_name)', { count: 'exact' })
+      .select(
+        '*, order:orders(display_id), assigned_to:profiles!assigned_to_id(full_name)',
+        { count: 'exact' },
+      )
       .eq('brand_id', brandId);
 
     if (filterDto.status) query = query.eq('status', filterDto.status);
-    if (filterDto.assigned_to_id) query = query.eq('assigned_to_id', filterDto.assigned_to_id);
+    if (filterDto.assigned_to_id)
+      query = query.eq('assigned_to_id', filterDto.assigned_to_id);
     if (filterDto.order_id) query = query.eq('order_id', filterDto.order_id);
     if (filterDto.due_date) query = query.eq('due_date', filterDto.due_date);
 
@@ -90,15 +103,17 @@ export class ProductionJobsService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('production_jobs')
-      .select(`
+      .select(
+        `
         *,
         order:orders(*),
         assigned_to:profiles!assigned_to_id(*),
         qa_reports(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -113,7 +128,7 @@ export class ProductionJobsService {
   async update(brandId: string, id: string, updateDto: UpdateProductionJobDto) {
     const client = this.supabase.getClient();
     const job = await this.findOne(brandId, id);
-    
+
     const { data, error } = await client
       .from('production_jobs')
       .update(updateDto)
@@ -137,15 +152,17 @@ export class ProductionJobsService {
           { item: 'Backing type correct', passed: null, notes: '' },
           { item: 'Border/edge quality', passed: null, notes: '' },
           { item: 'No loose threads', passed: null, notes: '' },
-          { item: 'Overall finish quality', passed: null, notes: '' }
+          { item: 'Overall finish quality', passed: null, notes: '' },
         ];
 
-        await client.from('qa_reports').insert([{
-          brand_id: brandId,
-          production_job_id: id,
-          status: QAStatus.Pending,
-          checklist: defaultChecklist,
-        }]);
+        await client.from('qa_reports').insert([
+          {
+            brand_id: brandId,
+            production_job_id: id,
+            status: QAStatus.Pending,
+            checklist: defaultChecklist,
+          },
+        ]);
       }
     }
 
@@ -156,7 +173,9 @@ export class ProductionJobsService {
     const client = this.supabase.getClient();
     const { data, error } = await client
       .from('production_jobs')
-      .select('*, order:orders(display_id), assigned_to:profiles!assigned_to_id(full_name, avatar_url)')
+      .select(
+        '*, order:orders(display_id), assigned_to:profiles!assigned_to_id(full_name, avatar_url)',
+      )
       .eq('brand_id', brandId);
 
     if (error) {
@@ -164,10 +183,13 @@ export class ProductionJobsService {
     }
 
     // Group by status
-    const board = Object.values(ProductionStatus).reduce((acc, status) => {
-      acc[status] = [];
-      return acc;
-    }, {} as Record<string, any[]>);
+    const board = Object.values(ProductionStatus).reduce(
+      (acc, status) => {
+        acc[status] = [];
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
 
     for (const job of data) {
       if (board[job.status]) {

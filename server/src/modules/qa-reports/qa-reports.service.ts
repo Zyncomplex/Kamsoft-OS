@@ -1,11 +1,21 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateQaReportDto } from './dto/create-qa-report.dto';
 import { UpdateQaReportDto } from './dto/update-qa-report.dto';
 import { QaReportFilterDto } from './dto/qa-report-filter.dto';
 import { UploadPhotoDto, PhotoType } from './dto/upload-photo.dto';
 import { UpdateChecklistDto } from './dto/update-checklist.dto';
-import { QAStatus, ProductionStatus, OrderStatus, MessageSenderType } from '../../types';
+import {
+  QAStatus,
+  ProductionStatus,
+  OrderStatus,
+  MessageSenderType,
+} from '../../types';
 
 @Injectable()
 export class QaReportsService {
@@ -13,7 +23,7 @@ export class QaReportsService {
 
   async create(brandId: string, createDto: CreateQaReportDto) {
     const client = this.supabase.getClient();
-    
+
     const defaultChecklist = [
       { item: 'Dimensions match spec', passed: null, notes: '' },
       { item: 'Color accuracy', passed: null, notes: '' },
@@ -21,7 +31,7 @@ export class QaReportsService {
       { item: 'Backing type correct', passed: null, notes: '' },
       { item: 'Border/edge quality', passed: null, notes: '' },
       { item: 'No loose threads', passed: null, notes: '' },
-      { item: 'Overall finish quality', passed: null, notes: '' }
+      { item: 'Overall finish quality', passed: null, notes: '' },
     ];
 
     const { data, error } = await client
@@ -49,12 +59,16 @@ export class QaReportsService {
     const client = this.supabase.getClient();
     let query = client
       .from('qa_reports')
-      .select('*, production_job:production_jobs(display_id)', { count: 'exact' })
+      .select('*, production_job:production_jobs(display_id)', {
+        count: 'exact',
+      })
       .eq('brand_id', brandId);
 
     if (filterDto.status) query = query.eq('status', filterDto.status);
-    if (filterDto.inspector_id) query = query.eq('inspector_id', filterDto.inspector_id);
-    if (filterDto.production_job_id) query = query.eq('production_job_id', filterDto.production_job_id);
+    if (filterDto.inspector_id)
+      query = query.eq('inspector_id', filterDto.inspector_id);
+    if (filterDto.production_job_id)
+      query = query.eq('production_job_id', filterDto.production_job_id);
 
     const page = filterDto.page || 1;
     const limit = filterDto.limit || 10;
@@ -82,17 +96,19 @@ export class QaReportsService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('qa_reports')
-      .select(`
+      .select(
+        `
         *,
         production_job:production_jobs(
           *,
           order:orders(*)
         ),
         inspector:profiles!inspector_id(*)
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -106,7 +122,7 @@ export class QaReportsService {
 
   async update(brandId: string, id: string, updateDto: UpdateQaReportDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('qa_reports')
       .update(updateDto)
@@ -118,7 +134,7 @@ export class QaReportsService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     if (!data) {
       throw new NotFoundException(`QA Report with ID ${id} not found`);
     }
@@ -126,7 +142,11 @@ export class QaReportsService {
     return data;
   }
 
-  async updateChecklist(brandId: string, id: string, updateDto: UpdateChecklistDto) {
+  async updateChecklist(
+    brandId: string,
+    id: string,
+    updateDto: UpdateChecklistDto,
+  ) {
     const client = this.supabase.getClient();
     const { data, error } = await client
       .from('qa_reports')
@@ -162,52 +182,99 @@ export class QaReportsService {
     const client = this.supabase.getClient();
     const report = await this.findOne(brandId, id);
 
-    if (report.status !== QAStatus.Pending && report.status !== QAStatus.In_Progress) {
+    if (
+      report.status !== QAStatus.Pending &&
+      report.status !== QAStatus.In_Progress
+    ) {
       throw new BadRequestException('Report is already submitted.');
     }
 
     // Validate minimum 2 photos
     if (!report.photos || report.photos.length < 2) {
-      throw new BadRequestException('Minimum 2 photos (front and back) are required before submission.');
+      throw new BadRequestException(
+        'Minimum 2 photos (front and back) are required before submission.',
+      );
     }
 
     // Validate checklist items are all answered
     const checklist = report.checklist || [];
-    const allAnswered = checklist.every((item: any) => item.passed === true || item.passed === false);
+    const allAnswered = checklist.every(
+      (item: any) => item.passed === true || item.passed === false,
+    );
     if (!allAnswered) {
-      throw new BadRequestException('All checklist items must be marked pass or fail.');
+      throw new BadRequestException(
+        'All checklist items must be marked pass or fail.',
+      );
     }
 
     const hasFailure = checklist.some((item: any) => item.passed === false);
 
     if (hasFailure) {
       // Fail Flow
-      await client.from('qa_reports').update({ status: QAStatus.Failed }).eq('id', id).eq('brand_id', brandId);
-      
+      await client
+        .from('qa_reports')
+        .update({ status: QAStatus.Failed })
+        .eq('id', id)
+        .eq('brand_id', brandId);
+
       // Update production job
-      await client.from('production_jobs').update({ status: ProductionStatus.Queued }).eq('id', report.production_job_id).eq('brand_id', brandId);
-      
+      await client
+        .from('production_jobs')
+        .update({ status: ProductionStatus.Queued })
+        .eq('id', report.production_job_id)
+        .eq('brand_id', brandId);
+
       // Auto-notify SDR and Manager via system message in order thread
       const order = report.production_job.order;
-      await this.postSystemMessage(brandId, order.customer_id, `QA Failed for order ${order.display_id}. Sent back to production queue for rework.`);
-      
-      return { status: QAStatus.Failed, message: 'QA failed. Rework initiated.' };
+      await this.postSystemMessage(
+        brandId,
+        order.customer_id,
+        `QA Failed for order ${order.display_id}. Sent back to production queue for rework.`,
+      );
+
+      return {
+        status: QAStatus.Failed,
+        message: 'QA failed. Rework initiated.',
+      };
     } else {
       // Pass Flow
-      await client.from('qa_reports').update({ status: QAStatus.Passed }).eq('id', id).eq('brand_id', brandId);
-      
-      await client.from('production_jobs').update({ status: ProductionStatus.Completed }).eq('id', report.production_job_id).eq('brand_id', brandId);
-      
+      await client
+        .from('qa_reports')
+        .update({ status: QAStatus.Passed })
+        .eq('id', id)
+        .eq('brand_id', brandId);
+
+      await client
+        .from('production_jobs')
+        .update({ status: ProductionStatus.Completed })
+        .eq('id', report.production_job_id)
+        .eq('brand_id', brandId);
+
       const order = report.production_job.order;
-      await client.from('orders').update({ status: OrderStatus.Shipping }).eq('id', order.id).eq('brand_id', brandId);
-      
-      await this.postSystemMessage(brandId, order.customer_id, `QA Passed for order ${order.display_id}. Order moved to Shipping.`);
-      
-      return { status: QAStatus.Passed, message: 'QA passed. Order moved to Shipping.' };
+      await client
+        .from('orders')
+        .update({ status: OrderStatus.Shipping })
+        .eq('id', order.id)
+        .eq('brand_id', brandId);
+
+      await this.postSystemMessage(
+        brandId,
+        order.customer_id,
+        `QA Passed for order ${order.display_id}. Order moved to Shipping.`,
+      );
+
+      return {
+        status: QAStatus.Passed,
+        message: 'QA passed. Order moved to Shipping.',
+      };
     }
   }
 
-  private async postSystemMessage(brandId: string, customerId: string, body: string) {
+  private async postSystemMessage(
+    brandId: string,
+    customerId: string,
+    body: string,
+  ) {
     const client = this.supabase.getClient();
     const { data: conv } = await client
       .from('conversations')
@@ -218,11 +285,13 @@ export class QaReportsService {
       .single();
 
     if (conv) {
-      await client.from('messages').insert([{
-        conversation_id: conv.id,
-        sender_type: MessageSenderType.system,
-        body
-      }]);
+      await client.from('messages').insert([
+        {
+          conversation_id: conv.id,
+          sender_type: MessageSenderType.system,
+          body,
+        },
+      ]);
     }
   }
 
@@ -236,14 +305,14 @@ export class QaReportsService {
     if (error) throw new InternalServerErrorException(error.message);
 
     const total = data.length;
-    const passed = data.filter(r => r.status === QAStatus.Passed).length;
-    const failed = data.filter(r => r.status === QAStatus.Failed).length;
+    const passed = data.filter((r) => r.status === QAStatus.Passed).length;
+    const failed = data.filter((r) => r.status === QAStatus.Failed).length;
 
     return {
       total,
       passed,
       failed,
-      passRate: total > 0 ? (passed / total) * 100 : 0
+      passRate: total > 0 ? (passed / total) * 100 : 0,
     };
   }
 }

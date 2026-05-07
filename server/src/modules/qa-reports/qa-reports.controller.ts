@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { QaReportsService } from './qa-reports.service';
 import { CreateQaReportDto } from './dto/create-qa-report.dto';
 import { UpdateQaReportDto } from './dto/update-qa-report.dto';
@@ -18,7 +28,13 @@ export class QaReportsController {
   constructor(private readonly qaReportsService: QaReportsService) {}
 
   @Post()
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createDto: CreateQaReportDto,
@@ -27,7 +43,13 @@ export class QaReportsController {
   }
 
   @Get('stats')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   getStats(@CurrentBrand() brandId: string) {
     return this.qaReportsService.getStats(brandId);
   }
@@ -49,7 +71,13 @@ export class QaReportsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -59,7 +87,13 @@ export class QaReportsController {
   }
 
   @Patch(':id/checklist')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   updateChecklist(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -69,7 +103,13 @@ export class QaReportsController {
   }
 
   @Post(':id/photos')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   uploadPhoto(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -79,7 +119,13 @@ export class QaReportsController {
   }
 
   @Post(':id/submit')
-  @Roles(UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO, UserRole.QA)
+  @Roles(
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+    UserRole.QA,
+  )
   submit(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

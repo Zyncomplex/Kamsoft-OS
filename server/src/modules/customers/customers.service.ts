@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -10,7 +14,7 @@ export class CustomersService {
 
   async create(brandId: string, createCustomerDto: CreateCustomerDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('customers')
       .insert([
@@ -37,7 +41,9 @@ export class CustomersService {
       .eq('brand_id', brandId);
 
     if (filterDto.search) {
-      query = query.or(`name.ilike.%${filterDto.search}%,email.ilike.%${filterDto.search}%,company.ilike.%${filterDto.search}%`);
+      query = query.or(
+        `name.ilike.%${filterDto.search}%,email.ilike.%${filterDto.search}%,company.ilike.%${filterDto.search}%`,
+      );
     }
 
     // Pagination
@@ -67,16 +73,18 @@ export class CustomersService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     // Fetch customer and their order history + invoices
     const { data, error } = await client
       .from('customers')
-      .select(`
+      .select(
+        `
         *,
         orders (
           id, display_id, status, total, currency, created_at
         )
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -88,9 +96,13 @@ export class CustomersService {
     return data;
   }
 
-  async update(brandId: string, id: string, updateCustomerDto: UpdateCustomerDto) {
+  async update(
+    brandId: string,
+    id: string,
+    updateCustomerDto: UpdateCustomerDto,
+  ) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('customers')
       .update(updateCustomerDto)
@@ -102,7 +114,7 @@ export class CustomersService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     if (!data) {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
@@ -112,13 +124,13 @@ export class CustomersService {
 
   async merge(brandId: string, targetId: string, sourceId: string) {
     const client = this.supabase.getClient();
-    
+
     // In a real scenario, we'd wrap this in a postgres function/rpc to ensure transactionality.
     // We would need to update customer_id in leads, quotes, orders, conversations, etc.
     const { error: rpcError } = await client.rpc('merge_customers', {
       p_brand_id: brandId,
       p_target_id: targetId,
-      p_source_id: sourceId
+      p_source_id: sourceId,
     });
 
     if (rpcError) {

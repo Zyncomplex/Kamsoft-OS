@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
@@ -16,7 +26,13 @@ export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
-  @Roles(UserRole.SDR, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.SDR,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createLeadDto: CreateLeadDto,
@@ -35,10 +51,7 @@ export class LeadsController {
   }
 
   @Get()
-  findAll(
-    @CurrentBrand() brandId: string,
-    @Query() filterDto: LeadFilterDto,
-  ) {
+  findAll(@CurrentBrand() brandId: string, @Query() filterDto: LeadFilterDto) {
     return this.leadsService.findAll(brandId, filterDto);
   }
 
@@ -51,7 +64,13 @@ export class LeadsController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.SDR, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.SDR,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,
@@ -83,7 +102,13 @@ export class LeadsController {
   }
 
   @Post(':id/convert')
-  @Roles(UserRole.SDR, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.SDR,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   convert(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

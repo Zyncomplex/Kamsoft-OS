@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { ConversationsService } from './conversations.service';
 import { CreateConversationDto } from './dto/create-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
@@ -54,7 +64,12 @@ export class ConversationsController {
     @CurrentUser() user: any,
     @Body() createMessageDto: CreateMessageDto,
   ) {
-    return this.conversationsService.addMessage(brandId, id, user.id, createMessageDto);
+    return this.conversationsService.addMessage(
+      brandId,
+      id,
+      user.id,
+      createMessageDto,
+    );
   }
 
   @Get(':id/messages')

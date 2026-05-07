@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+  BadRequestException,
+} from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
@@ -11,7 +16,7 @@ export class InvoicesService {
 
   async create(brandId: string, createDto: CreateInvoiceDto) {
     const client = this.supabase.getClient();
-    
+
     // Check if order exists
     const { data: order, error: orderError } = await client
       .from('orders')
@@ -54,7 +59,7 @@ export class InvoicesService {
     if (filterDto.status) {
       query = query.eq('status', filterDto.status);
     }
-    
+
     // The overdue filter logic
     if (filterDto.overdue === true || String(filterDto.overdue) === 'true') {
       const now = new Date().toISOString();
@@ -87,16 +92,18 @@ export class InvoicesService {
 
   async findOne(brandId: string, id: string) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('invoices')
-      .select(`
+      .select(
+        `
         *,
         order:orders(
           *,
           customer:customers(*)
         )
-      `)
+      `,
+      )
       .eq('id', id)
       .eq('brand_id', brandId)
       .single();
@@ -110,7 +117,7 @@ export class InvoicesService {
 
   async update(brandId: string, id: string, updateDto: UpdateInvoiceDto) {
     const client = this.supabase.getClient();
-    
+
     const { data, error } = await client
       .from('invoices')
       .update(updateDto)
@@ -122,7 +129,7 @@ export class InvoicesService {
     if (error) {
       throw new InternalServerErrorException(error.message);
     }
-    
+
     if (!data) {
       throw new NotFoundException(`Invoice with ID ${id} not found`);
     }
@@ -173,6 +180,6 @@ export class InvoicesService {
   }
 
   async getOverdue(brandId: string) {
-    return this.findAll(brandId, { overdue: true } as InvoiceFilterDto);
+    return this.findAll(brandId, { overdue: true });
   }
 }

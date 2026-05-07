@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { CustomersService } from './customers.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { UpdateCustomerDto } from './dto/update-customer.dto';
@@ -16,7 +26,13 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Post()
-  @Roles(UserRole.SDR, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.SDR,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   create(
     @CurrentBrand() brandId: string,
     @Body() createCustomerDto: CreateCustomerDto,
@@ -41,7 +57,13 @@ export class CustomersController {
   }
 
   @Patch(':id')
-  @Roles(UserRole.SDR, UserRole.Manager, UserRole.Admin, UserRole.GM, UserRole.CEO)
+  @Roles(
+    UserRole.SDR,
+    UserRole.Manager,
+    UserRole.Admin,
+    UserRole.GM,
+    UserRole.CEO,
+  )
   update(
     @CurrentBrand() brandId: string,
     @Param('id', ParseUUIDPipe) id: string,

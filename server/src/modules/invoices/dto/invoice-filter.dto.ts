@@ -9,5 +9,5 @@ export class InvoiceFilterDto extends PaginationDto {
 
   // if true, filters where due_date < now and status != Paid
   @IsOptional()
-  overdue?: boolean; 
+  overdue?: boolean;
 }

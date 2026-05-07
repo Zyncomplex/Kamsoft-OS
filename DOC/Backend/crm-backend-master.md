@@ -47,12 +47,12 @@
    |-- AuthGuard (Supabase JWT verification)
    |-- BrandContext Middleware (injects active brand_id)
    |-- RolesGuard (RBAC enforcement)
-   |-- Modules (leads, orders, quotes, etc.)
+   |-- Modules (leads, orders, quotes, shipments, production-jobs, design-tasks, qa-reports)
    |-- Integration Adapters (plug-and-play slots)
    |
    v  @supabase/supabase-js (service-role key)
 [Supabase]
-   |-- PostgreSQL (17 tables + RLS policies)
+   |-- PostgreSQL (18 tables + RLS policies)
    |-- Auth (email/password, admin-only creation)
    |-- Storage (artwork files, QA photos)
    +-- Realtime (live updates for dashboards)
@@ -60,7 +60,7 @@
 
 ---
 
-## Database Schema (17 Tables)
+## Database Schema (18 Tables)
 
 ### Core Tables
 
@@ -307,6 +307,25 @@
 
 > **RLS Rule**: Every table with `brand_id` gets a policy: `brand_id = (SELECT active_brand_id FROM profiles WHERE id = auth.uid())`
 
+#### `vendors`
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid PK | |
+| brand_id | uuid FK->brands | **tenant key** |
+| name | text | |
+| contact_name | text | |
+| email | text | |
+| phone | text | |
+| location | text | |
+| capabilities | text[] | e.g. chenille, PVC, woven |
+| rating | numeric | overall rating |
+| on_time_rate | numeric | % on-time delivery |
+| defect_rate | numeric | % defects |
+| total_jobs | integer | completed job count |
+| notes | text | |
+| is_active | boolean | soft disable |
+| created_at | timestamptz | |
+
 ---
 
 ## NestJS Server Structure
@@ -350,10 +369,11 @@ server/
       quotes/                        # Quote builder + PDF
       orders/                        # Order lifecycle
       invoices/                      # Invoice CRUD
-      production/                    # Production jobs
-      design/                        # Artwork proofing + versions
-      qa/                            # QA checklists + photos
-      shipping/                      # Shipment tracking
+      production-jobs/               # Production jobs
+      design-tasks/                  # Artwork proofing + versions
+      qa-reports/                    # QA checklists + photos
+      shipments/                     # Shipment tracking
+      vendors/                       # Vendor management + rankings
       reports/                       # Dashboard data endpoints
       activity-log/                  # Audit trail
       integrations/                  # Plug-and-play adapter system
@@ -401,10 +421,10 @@ IntegrationAdapter (abstract)
 
 | Phase | File | Focus | Tasks |
 |-------|------|-------|-------|
-| **1** | crm-backend-phase1.md | Foundation and Auth | Supabase setup, NestJS scaffold, auth, multi-tenant, brands |
-| **2** | crm-backend-phase2.md | CRM Core | Leads, Customers, Shared Inbox, Quotes, Orders, Invoices |
-| **3** | crm-backend-phase3.md | Production and Design and QA | Production Jobs, Design Proofing, QA Checklists |
-| **4** | crm-backend-phase4.md | Fulfillment and Integrations | Shipping, Integration Adapters, Reports, Activity Log |
+| **1** | crm-backend-phase1.md | Foundation and Auth | ✅ Supabase setup, NestJS scaffold, auth, multi-tenant, brands |
+| **2** | crm-backend-phase2.md | CRM Core | ✅ Leads, Customers, Shared Inbox, Quotes, Orders, Invoices |
+| **3** | crm-backend-phase3.md | Production and Design and QA | ✅ Production Jobs, Design Proofing, QA Checklists |
+| **4** | crm-backend-phase4.md | Fulfillment and Integrations | ✅ Shipping, Vendors, Integration Adapters, Reports, Activity Log |
 
 ---
 
@@ -421,12 +441,12 @@ IntegrationAdapter (abstract)
 
 ## Phase X: Verification (After All Phases)
 
-- [ ] `npm run build` passes (NestJS)
-- [ ] `npm run lint` passes
-- [ ] All endpoints return correct data for correct brand
-- [ ] Brand switching returns isolated data (no cross-brand leaks)
-- [ ] Admin can create users; non-admins cannot
-- [ ] RLS policies tested (direct DB access blocked for wrong brand)
-- [ ] Integration adapters accept config and report connection status
-- [ ] Activity log captures all mutations
-- [ ] Frontend can replace mock data with API calls
+- [x] `npm run build` passes (NestJS)
+- [x] `npm run lint` passes
+- [x] All endpoints return correct data for correct brand
+- [x] Brand switching returns isolated data (no cross-brand leaks)
+- [x] Admin can create users; non-admins cannot
+- [x] RLS policies tested (direct DB access blocked for wrong brand)
+- [x] Integration adapters accept config and report connection status
+- [x] Activity log captures all mutations
+- [ ] Frontend can replace mock data with API calls — ⚠️ **IN PROGRESS** (hooks built, pages partially wired)

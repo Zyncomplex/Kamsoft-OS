@@ -1,39 +1,72 @@
 export type UserRole = 'SDR' | 'Manager' | 'Designer' | 'Production' | 'QA' | 'Admin' | 'GM' | 'CEO';
 
-export interface User {
+export interface Profile {
   id: string;
-  name: string;
   email: string;
+  full_name: string;
   role: UserRole;
-  avatar?: string;
+  brand_ids: string[];
+  active_brand_id: string | null;
+  is_active: boolean;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export type LeadStatus = 'New' | 'Contacted' | 'Invoice Sent' | 'Won' | 'Lost';
 
 export interface Lead {
   id: string;
-  customerId: string;
-  customerName: string;
+  display_id: string;
+  customer_id: string;
+  brand_id: string;
   source: string;
-  brand: string;
-  country: string;
-  assignedSdrId?: string;
+  assigned_sdr_id?: string;
   status: LeadStatus;
-  createdAt: string;
-  lastActivityAt: string;
-  slaDeadline: string;
+  priority: 'Low' | 'Medium' | 'High' | 'Critical';
+  notes?: string;
+  sla_deadline?: string;
+  created_at: string;
+  updated_at: string;
+  // Join fields
+  customer?: {
+    name: string;
+    email: string;
+  };
 }
 
-export type OrderStatus = 'Awaiting Payment' | 'Design' | 'Production' | 'QA' | 'Shipping' | 'Delivered';
+export type OrderStatus = 'Awaiting_Payment' | 'Design' | 'Production' | 'QA' | 'Shipping' | 'Delivered';
 
 export interface Order {
   id: string;
-  leadId: string;
-  customerName: string;
-  brand: string;
+  display_id: string;
+  quote_id: string;
+  customer_id: string;
+  brand_id: string;
   status: OrderStatus;
-  totalAmount: number;
+  total: number;
   currency: string;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
+  // Join fields
+  customer?: {
+    name: string;
+  };
+}
+
+export interface Brand {
+  id: string;
+  name: string;
+  slug: string;
+  logo_url?: string;
+  currency: string;
+  settings: BrandSettings;
+  is_active: boolean;
+}
+
+export interface BrandSettings {
+  tax_rate: number;
+  sla_minutes_lead: number;
+  enable_auto_assignment: boolean;
+  [key: string]: any;
 }

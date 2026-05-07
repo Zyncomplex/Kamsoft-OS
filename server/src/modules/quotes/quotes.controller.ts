@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Query, UseGuards, ParseUUIDPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Query,
+  UseGuards,
+  ParseUUIDPipe,
+} from '@nestjs/common';
 import { QuotesService } from './quotes.service';
 import { CreateQuoteDto, QuoteItemDto } from './dto/create-quote.dto';
 import { UpdateQuoteDto } from './dto/update-quote.dto';
@@ -14,27 +24,19 @@ export class QuotesController {
   constructor(private readonly quotesService: QuotesService) {}
 
   @Post()
-  create(
-    @CurrentBrand() brandId: string,
-    @Body() createDto: CreateQuoteDto,
-  ) {
+  create(@CurrentBrand() brandId: string, @Body() createDto: CreateQuoteDto) {
     return this.quotesService.create(brandId, createDto);
   }
 
   @Post('calculate')
-  calculate(
-    @Body('items') items: QuoteItemDto[]
-  ) {
+  async calculate(@CurrentBrand() brandId: string, @Body('items') items: QuoteItemDto[]) {
     const warnings = this.quotesService.validateQuoteItems(items);
-    const totals = this.quotesService.calculateTotals(items);
+    const totals = await this.quotesService.calculateTotals(brandId, items);
     return { ...totals, warnings };
   }
 
   @Get()
-  findAll(
-    @CurrentBrand() brandId: string,
-    @Query() filterDto: QuoteFilterDto,
-  ) {
+  findAll(@CurrentBrand() brandId: string, @Query() filterDto: QuoteFilterDto) {
     return this.quotesService.findAll(brandId, filterDto);
   }
 
